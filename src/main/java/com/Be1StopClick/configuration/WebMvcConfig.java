@@ -32,16 +32,13 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Autowired
     private Environment env;
 
-    @Override
+    //@Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         String resourceHandler = Preconditions.checkNotNull(env.getProperty("spring.mvc.resource.handler"));
         String resourceLocation = Preconditions.checkNotNull(env.getProperty("spring.mvc.resource.location"));
         registry.addResourceHandler(resourceHandler).
                 addResourceLocations(resourceLocation).
                 setCachePeriod(31556926);
-        /*registry.addResourceHandler("/resources/**").
-                addResourceLocations("classpath:/static/").
-                setCachePeriod(31556926);*/
     }
 
     /**/

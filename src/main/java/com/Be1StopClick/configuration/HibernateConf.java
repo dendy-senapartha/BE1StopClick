@@ -18,7 +18,8 @@ import java.util.Properties;
 
 @Configuration
 @EnableTransactionManagement
-@PropertySource({"classpath:hibernate-persistance.properties"})
+// load the hibernate.properties
+@PropertySource({"classpath:hibernate.properties"})
 @ComponentScans(value = {
         @ComponentScan("com.Be1StopClick.dao.repository")
 })
@@ -27,26 +28,6 @@ public class HibernateConf {
 
     @Autowired
     private Environment env;
-
-    /*
-    @Bean
-    public LocalSessionFactoryBean sessionFactory() {
-        LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
-        sessionFactory.setDataSource(dataSource());
-        sessionFactory.setHibernateProperties(hibernateProperties());
-        sessionFactory.setPackagesToScan(new String[] {"com.mitrais.rms.model"});
-
-        return sessionFactory;
-    }
-
-    @Bean
-    public HibernateTransactionManager hibernateTransactionManager() {
-        HibernateTransactionManager transactionManager = new HibernateTransactionManager();
-        transactionManager.setSessionFactory(sessionFactory().getObject());
-        return transactionManager;
-    }*/
-
-    /*using Entity Manager from JPA*/
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
@@ -67,7 +48,6 @@ public class HibernateConf {
 
     @Bean
     public DataSource dataSource() {
-        //get value from XML using goolge guava preconditions
         String driver = Preconditions.checkNotNull(env.getProperty("jdbc.driverClassName"));
         String url = Preconditions.checkNotNull(env.getProperty("jdbc.url"));
         String user = Preconditions.checkNotNull(env.getProperty("jdbc.user"));

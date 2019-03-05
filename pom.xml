@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.BE1StopClick</groupId>
-    <artifactId>BE-1StopClick</artifactId>
+    <artifactId>1StopClick</artifactId>
     <version>0.0.1</version>
     <!-- The packaging type need to be change to jar instead war if using spring boot.
     -->
@@ -85,7 +85,6 @@
             <groupId>javax.servlet</groupId>
             <artifactId>jstl</artifactId>
             <version>1.2</version>
-            <scope>provided</scope>
         </dependency>
 
         <!--We want to use JSP as the view.

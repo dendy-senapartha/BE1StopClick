@@ -12,7 +12,13 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
  */
 
 @SpringBootApplication
-public class Application {
+public class Application extends SpringBootServletInitializer  {
+
+    //spring entry point for war package
+    @Override
+    protected SpringApplicationBuilder configure (SpringApplicationBuilder builder) {
+        return builder.sources(Application.class);
+    }
 
 
     public static void main(String[] args) {
