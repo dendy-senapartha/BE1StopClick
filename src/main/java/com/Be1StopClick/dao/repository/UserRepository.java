@@ -97,7 +97,7 @@ public class UserRepository implements UserDao {
 
     @Override
     public boolean save(User user) {
-        boolean status = false ;
+        boolean status;
         try
         {
             entityManager.persist(user);
@@ -106,6 +106,7 @@ public class UserRepository implements UserDao {
         catch (HibernateException ex)
         {
             System.out.println("exception: "+ex);
+            status = false;
         }
 
         return status;

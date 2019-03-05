@@ -1,5 +1,7 @@
 package com.Be1StopClick.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 
 /*
@@ -16,6 +18,11 @@ public class User {
     private String userName;
     @Column(name = "password")
     private String password;
+
+    @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @JoinColumn(name="user_profile_id")
+    @JsonManagedReference
+    private UserProfile userProfile;
 
     public User() {
     }
@@ -50,8 +57,17 @@ public class User {
         this.password = password;
     }
 
+    public UserProfile getUserProfile() {
+        return userProfile;
+    }
+
+    public void setUserProfile(UserProfile userProfile) {
+        this.userProfile = userProfile;
+    }
+
     @Override
     public String toString() {
         return "User [id=" + id + ", userName=" + userName + ", password=" + password + "]";
     }
+
 }
