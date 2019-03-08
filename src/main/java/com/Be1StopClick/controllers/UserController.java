@@ -62,4 +62,25 @@ public class UserController {
         return userRepository.save(user);
     }
 
+    @PostMapping("/user/update")
+    public boolean updateUser(@RequestBody Map<String, Object> body) {
+        String id = body.get("id").toString();
+        String username = body.get("username").toString();
+        String password = body.get("password").toString();
+        ObjectMapper objectMapper = new ObjectMapper();
+        Object usrPrflObject = body.get("user_profile");
+        UserProfile usrPrfl = objectMapper.convertValue(usrPrflObject, UserProfile.class);
+        User user = new User(Long.parseLong(id), username, password);
+        user.setUserProfile(new UserProfile(usrPrfl.getId(), usrPrfl.getFirstName(), usrPrfl.getLastName(),
+                usrPrfl.getDob(), usrPrfl.getPhone(), usrPrfl.getProfilePhoto()));
+        return userRepository.update(user);
+    }
+
+    @PostMapping("/user/delete")
+    public boolean deleteUser(@RequestBody Map<String, Object> body) {
+        String id = body.get("id").toString();
+        User delUser = userRepository.find(Long.parseLong(id)).get();
+        return userRepository.delete(delUser);
+    }
+
 }

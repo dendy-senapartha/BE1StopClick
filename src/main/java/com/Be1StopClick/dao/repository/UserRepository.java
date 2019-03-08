@@ -75,7 +75,13 @@ public class UserRepository implements UserDao {
         List<User> results = query.getResultList();
         //session.close();
         User user = null;
-
+        for( User e:results ) {
+            user = new User(
+                    e.getId(),
+                    e.getUserName(),
+                    e.getPassword());
+            user.setUserProfile(e.getUserProfile());
+        }
         if(user != null)
         {
             return Optional.of(user);
