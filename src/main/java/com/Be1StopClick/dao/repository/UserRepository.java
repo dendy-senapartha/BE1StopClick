@@ -30,15 +30,14 @@ public class UserRepository implements UserDao {
         query.setParameter("userName", userName);
         List<User> results = query.getResultList();
         User user = null;
-
-        if(user != null)
-        {
-            return Optional.of(user);
+        for( User e:results ) {
+            user = new User(
+                    e.getId(),
+                    e.getUserName(),
+                    e.getPassword());
+            user.setUserProfile(e.getUserProfile());
         }
-        else
-        {
-            return Optional.empty();
-        }
+        return Optional.ofNullable(user);
     }
 
     @Override
@@ -52,15 +51,15 @@ public class UserRepository implements UserDao {
         List<User> results = query.getResultList();
 
         User user = null;
+        for( User e:results ) {
+            user = new User(
+                    e.getId(),
+                    e.getUserName(),
+                    e.getPassword());
+            user.setUserProfile(e.getUserProfile());
+        }
 
-        if(user != null)
-        {
-            return Optional.of(user);
-        }
-        else
-        {
-            return Optional.empty();
-        }
+        return Optional.ofNullable(user);
     }
 
     @Override
@@ -82,14 +81,7 @@ public class UserRepository implements UserDao {
                     e.getPassword());
             user.setUserProfile(e.getUserProfile());
         }
-        if(user != null)
-        {
-            return Optional.of(user);
-        }
-        else
-        {
-            return Optional.empty();
-        }
+        return Optional.ofNullable(user);
     }
 
     @Override

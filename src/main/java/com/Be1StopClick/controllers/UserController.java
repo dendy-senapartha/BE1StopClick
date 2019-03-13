@@ -13,6 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /*
  * Created by dendy-prtha on 01/03/2019.
@@ -33,6 +34,8 @@ public class UserController {
         String arrayToJson = null;
         try {
             //http://www.makeinjava.com/convert-list-objects-tofrom-json-java-jackson-objectmapper-example/
+            //Map<String, List> container= new HashMap<>();
+            //container.put("dafuq", userRepository.findAll());
             arrayToJson = mapper.writeValueAsString(userRepository.findAll());
         } catch (JsonProcessingException e) {
             e.printStackTrace();
@@ -60,6 +63,17 @@ public class UserController {
         user.setUserProfile(new UserProfile(null, usrPrfl.getFirstName(), usrPrfl.getLastName(),
                 usrPrfl.getDob(), usrPrfl.getPhone(), usrPrfl.getProfilePhoto()));
         return userRepository.save(user);
+    }
+
+    @PostMapping("/user/login")
+    public User login(@RequestBody Map<String, Object> body) {
+        String username = body.get("username").toString();
+        String password = body.get("password").toString();
+        Optional<User> optionalUser = userRepository.findByUserNamePassword(username, password);
+        if(optionalUser.isPresent()) {
+            return optionalUser.get();
+        }
+        return null;
     }
 
     @PostMapping("/user/update")
