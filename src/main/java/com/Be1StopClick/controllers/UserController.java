@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -52,32 +53,38 @@ public class UserController {
         return new ModelAndView("users/list");
     }
 
-    @PostMapping("/user/insert")
-    public boolean insertUser(@RequestBody Map<String, Object> body) {
+    @PostMapping(value = "/user/insert", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Map<String, String> insertUser(@RequestBody Map<String, Object> body) {
         String username = body.get("username").toString();
         String password = body.get("password").toString();
         ObjectMapper objectMapper = new ObjectMapper();
         Object usrPrflObject = body.get("user_profile");
         UserProfile usrPrfl = objectMapper.convertValue(usrPrflObject, UserProfile.class);
         User user = new User(null, username, password);
-        user.setUserProfile(new UserProfile(null, usrPrfl.getFirstName(), usrPrfl.getLastName(),
-                usrPrfl.getDob(), usrPrfl.getPhone(), usrPrfl.getProfilePhoto()));
-        return userRepository.save(user);
+        user.setUserProfile(new UserProfile(null, usrPrfl.getName(),
+                usrPrfl.getDob(), usrPrfl.getPhone(), usrPrfl.getImageUrl()));
+
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("result", "" + userRepository.save(user));
+        return map;
     }
 
     @PostMapping("/user/login")
+    @ResponseBody
     public User login(@RequestBody Map<String, Object> body) {
         String username = body.get("username").toString();
         String password = body.get("password").toString();
         Optional<User> optionalUser = userRepository.findByUserNamePassword(username, password);
-        if(optionalUser.isPresent()) {
+        if (optionalUser.isPresent()) {
             return optionalUser.get();
         }
         return null;
     }
 
     @PostMapping("/user/update")
-    public boolean updateUser(@RequestBody Map<String, Object> body) {
+    @ResponseBody
+    public Map<String, String> updateUser(@RequestBody Map<String, Object> body) {
         String id = body.get("id").toString();
         String username = body.get("username").toString();
         String password = body.get("password").toString();
@@ -85,16 +92,21 @@ public class UserController {
         Object usrPrflObject = body.get("user_profile");
         UserProfile usrPrfl = objectMapper.convertValue(usrPrflObject, UserProfile.class);
         User user = new User(Long.parseLong(id), username, password);
-        user.setUserProfile(new UserProfile(usrPrfl.getId(), usrPrfl.getFirstName(), usrPrfl.getLastName(),
-                usrPrfl.getDob(), usrPrfl.getPhone(), usrPrfl.getProfilePhoto()));
-        return userRepository.update(user);
+        user.setUserProfile(new UserProfile(usrPrfl.getId(), usrPrfl.getName(),
+                usrPrfl.getDob(), usrPrfl.getPhone(), usrPrfl.getImageUrl()));
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("result", "" + userRepository.update(user));
+        return map;
     }
 
     @PostMapping("/user/delete")
-    public boolean deleteUser(@RequestBody Map<String, Object> body) {
+    @ResponseBody
+    public Map<String, String> deleteUser(@RequestBody Map<String, Object> body) {
         String id = body.get("id").toString();
-        User delUser = userRepository.find(Long.parseLong(id)).get();
-        return userRepository.delete(delUser);
+        User delUser = userRepository.findById(Long.parseLong(id)).get();
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("result", "" + userRepository.delete(delUser));
+        return map;
     }
 
 }

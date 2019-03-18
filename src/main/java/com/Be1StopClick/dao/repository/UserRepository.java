@@ -33,7 +33,7 @@ public class UserRepository implements UserDao {
         for( User e:results ) {
             user = new User(
                     e.getId(),
-                    e.getUserName(),
+                    e.getEmail(),
                     e.getPassword());
             user.setUserProfile(e.getUserProfile());
         }
@@ -54,7 +54,7 @@ public class UserRepository implements UserDao {
         for( User e:results ) {
             user = new User(
                     e.getId(),
-                    e.getUserName(),
+                    e.getEmail(),
                     e.getPassword());
             user.setUserProfile(e.getUserProfile());
         }
@@ -63,7 +63,29 @@ public class UserRepository implements UserDao {
     }
 
     @Override
-    public Optional<User> find(Long aLong) {
+    public Optional<User> findByEmail(String email) {
+        String hql = "FROM User user WHERE user.email = :email";
+        System.out.println(hql);
+        Query query = entityManager.createQuery(hql);
+        query.setParameter("email", email);
+        List<User> results = query.getResultList();
+        User user = null;
+        for( User e:results ) {
+            user = new User(
+                    e.getId(),
+                    e.getEmail(),
+                    e.getPassword());
+            user.setEmail(e.getEmail());
+            user.setProvider(e.getProvider());
+            user.setEmailVerified(e.getEmailVerified());
+            user.setProviderId(e.getProviderId());
+            user.setUserProfile(e.getUserProfile());
+        }
+        return Optional.ofNullable(user);
+    }
+
+    @Override
+    public Optional<User> findById(Long aLong) {
         //Session session = this.sessionFactory.openSession();
 
         String hql = "FROM User user WHERE user.id = :id";
@@ -77,7 +99,7 @@ public class UserRepository implements UserDao {
         for( User e:results ) {
             user = new User(
                     e.getId(),
-                    e.getUserName(),
+                    e.getEmail(),
                     e.getPassword());
             user.setUserProfile(e.getUserProfile());
         }

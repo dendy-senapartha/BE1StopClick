@@ -23,7 +23,7 @@ public class UserProfileRepository implements UserProfileDao {
     }
 
     @Override
-    public Optional<UserProfile> find(Integer integer) {
+    public Optional<UserProfile> findById(Integer integer) {
         return Optional.empty();
     }
 

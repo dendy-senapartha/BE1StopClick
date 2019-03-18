@@ -13,34 +13,31 @@ public class UserProfile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "first_name")
-    private String firstName;
-    @Column(name = "last_name")
-    private String lastName;
+    @Column(name = "name")
+    private String name;
     @Column(name = "dob")
     private String dob;
     @Column(name = "phone")
     private String phone;
-    @Column(name = "profile_photo")
-    private String profilePhoto;
+    @Column(name = "image_url")
+    private String imageUrl;
 
     public UserProfile() {
     }
 
-    public UserProfile(Long id, String firstName, String lastName, String dob, String phone
+    public UserProfile(Long id, String name, String dob, String phone
             , String profile_photo) {
         this.setId(id);
-        this.setFirstName(firstName);
-        this.setLastName(lastName);
+        this.setName(name);
         this.setDob(dob);
         this.setPhone(phone);
-        this.setProfilePhoto(profile_photo);
+        this.setImageUrl(profile_photo);
     }
 
     @Override
     public String toString() {
-        return "UserProfile [id=" + getId() + ", firstName=" + firstName + ", lastName=" + lastName +
-                ", dob=" + dob + ", phone=" + phone + ", profilePhoto=" + profilePhoto + "]";
+        return "UserProfile [id=" + getId() + ", name=" + name +
+                ", dob=" + dob + ", phone=" + phone + ", imageUrl=" + imageUrl + "]";
     }
 
     public Long getId() {
@@ -51,20 +48,12 @@ public class UserProfile {
         this.id = id;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getName() {
+        return name;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDob() {
@@ -83,11 +72,11 @@ public class UserProfile {
         this.phone = phone;
     }
 
-    public String getProfilePhoto() {
-        return profilePhoto;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
-    public void setProfilePhoto(String profilePhoto) {
-        this.profilePhoto = profilePhoto;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

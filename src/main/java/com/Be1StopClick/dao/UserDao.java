@@ -25,4 +25,12 @@ public interface UserDao extends Dao<User, Long> {
      * @return user
      */
     Optional<User> findByUserNamePassword(String userName, String password);
+
+    /**
+     * Find {@link User} by its email.
+     *
+     * @param email email     *
+     * @return user
+     */
+    Optional<User> findByEmail(String email);
 }
