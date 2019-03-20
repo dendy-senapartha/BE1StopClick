@@ -10,7 +10,7 @@ import java.util.List;
  * property taken from application.properties
  */
 
-@ConfigurationProperties(prefix = "app")
+//@ConfigurationProperties(prefix = "app")
 public class OAuthProperties {
     private final Auth auth = new Auth();
     private final OAuth2 oauth2 = new OAuth2();

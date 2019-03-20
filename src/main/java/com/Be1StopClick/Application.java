@@ -14,7 +14,6 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
  */
 
 @SpringBootApplication
-@EnableConfigurationProperties(OAuthProperties.class)
 public class Application //extends SpringBootServletInitializer
 {
 

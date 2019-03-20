@@ -1,5 +1,6 @@
 package com.Be1StopClick.model;
 
+import com.Be1StopClick.security.AuthProvider;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 

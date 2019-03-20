@@ -75,7 +75,7 @@ public class UserController {
     public User login(@RequestBody Map<String, Object> body) {
         String username = body.get("username").toString();
         String password = body.get("password").toString();
-        Optional<User> optionalUser = userRepository.findByUserNamePassword(username, password);
+        Optional<User> optionalUser = userRepository.findByEmailPassword(username, password);
         if (optionalUser.isPresent()) {
             return optionalUser.get();
         }
