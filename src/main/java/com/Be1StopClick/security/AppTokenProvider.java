@@ -22,12 +22,12 @@ import java.util.Optional;
 public class AppTokenProvider {
 
     private static final long EXPIRATION_TIME_SECONDS = 864_000_000; // 10 days
-    private static final String SECRET = "ThisIsASecret";
-    private static final String TOKEN_PREFIX = "Bearer";
+    private static final String SECRET = "ThisIsASecretOf1StopClick";
+    private static final String TOKEN_PREFIX = "1StopClick";
     private static final String HEADER_STRING = "Authorization";
 
     public static void addAuthentication(HttpServletResponse res, String username) {
-        res.addHeader(HEADER_STRING, TOKEN_PREFIX + " " + getToken(username));
+        res.addHeader(HEADER_STRING, TOKEN_PREFIX + "-" + getToken(username));
         String headerString = res.getHeader(HEADER_STRING);
         System.out.println("Header String "+ headerString);
     }

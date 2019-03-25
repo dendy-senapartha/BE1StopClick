@@ -42,14 +42,13 @@ public class UserRepository implements UserDao {
 
     @Override
     public Optional<User> findByEmailPassword(String email, String password) {
-        String hql = "FROM User user WHERE user.email = :email AND user.password = :password ";
+        String hql = "FROM User user WHERE user.email LIKE :email AND user.password LIKE :password";
         System.out.println(hql);
         Query query = entityManager.createQuery(hql);
         query.setParameter("email", email);
         query.setParameter("password", password);
 
         List<User> results = query.getResultList();
-
         User user = null;
         for( User e:results ) {
             user = new User(

@@ -70,18 +70,6 @@ public class UserController {
         return map;
     }
 
-    @PostMapping("/user/login")
-    @ResponseBody
-    public User login(@RequestBody Map<String, Object> body) {
-        String username = body.get("username").toString();
-        String password = body.get("password").toString();
-        Optional<User> optionalUser = userRepository.findByEmailPassword(username, password);
-        if (optionalUser.isPresent()) {
-            return optionalUser.get();
-        }
-        return null;
-    }
-
     @PostMapping("/user/update")
     @ResponseBody
     public Map<String, String> updateUser(@RequestBody Map<String, Object> body) {

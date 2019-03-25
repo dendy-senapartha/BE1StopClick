@@ -115,6 +115,12 @@
             <version>1.2</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.56</version>
+        </dependency>
+
         <!--We want to use JSP as the view.
        The default embedded servlet container for Spring Boot Starter Web is Tomcat.
        To enable support for JSPs, we would need to add a dependency on tomcat-embed-jasper.-->

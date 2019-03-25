@@ -34,9 +34,8 @@ public class User {
     private String password;
 
     @NotNull
-    @Enumerated(EnumType.STRING)
     @Column(name = "provider")
-    private AuthProvider provider;
+    private String provider;
 
     @Column(name = "provider_id")
     private String providerId;
@@ -95,11 +94,11 @@ public class User {
         this.emailVerified = emailVerified;
     }
 
-    public AuthProvider getProvider() {
+    public String getProvider() {
         return provider;
     }
 
-    public void setProvider(AuthProvider provider) {
+    public void setProvider(String provider) {
         this.provider = provider;
     }
 

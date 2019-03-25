@@ -34,12 +34,12 @@ public class Filters {
         return filterRegistrationBean;
     }
 
+    //default filter
     @Bean
-    public FilterRegistrationBean restRegistrationBean() {
+    public FilterRegistrationBean defaultRegistrationBean() {
         FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
         filterRegistrationBean.setFilter(restFilter);
         List<String> urls = new ArrayList<String>();
-
         urls.add("/rest/*");
         urls.add("/user/*");
         //filterRegistrationBean.setUrlPatterns(Collections.singletonList("/rest/*"));

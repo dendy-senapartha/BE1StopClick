@@ -2,10 +2,13 @@ package com.Be1StopClick.controllers;
 
 import com.Be1StopClick.dao.UserDao;
 import com.Be1StopClick.model.User;
+import com.Be1StopClick.security.AppTokenProvider;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -21,15 +24,41 @@ public class AuthController {
     @Autowired
     private UserDao userRepository;
 
-    @PostMapping(value = "/auth/login",
+    @PostMapping(value = "/auth/local-login",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public User login(@RequestBody Map<String, Object> body) {
-        String email = body.get("username").toString();
-        Optional<User> userOptional = userRepository.findByEmail(email);
-        User user;
-        if (userOptional.isPresent()) {
-            user = userOptional.get();
-            return user;
+    public Map<String, Object> localLogin(@RequestBody Map<String, Object> body, HttpServletResponse response) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        Optional<Object> email = Optional.ofNullable(body.get("email"));
+        Optional<Object> password = Optional.ofNullable(body.get("password"));
+        //LocalLoginRequest localLoginRequest=  JSON.parseObject(body, LocalLoginRequest.class);
+        if (email.isPresent() && password.isPresent()) {
+            AppTokenProvider.addAuthentication(response, email.get().toString());
+            Optional<User> userOptional = userRepository.findByEmailPassword(email.get().toString(), password.get().toString());
+            User user;
+            if (userOptional.isPresent()) {
+                user = userOptional.get();
+                ObjectMapper oMapper = new ObjectMapper();
+                map = oMapper.convertValue(user, Map.class);
+                return map;
+            }
+        }
+        return null;
+    }
+
+    @PostMapping(value = "/auth/social-login",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, Object> socialLogin(@RequestBody Map<String, Object> body) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        Optional<Object> email = Optional.ofNullable(body.get("email"));
+        if (email.isPresent()) {
+            Optional<User> userOptional = userRepository.findByEmail(email.get().toString());
+            User user;
+            if (userOptional.isPresent()) {
+                user = userOptional.get();
+                ObjectMapper oMapper = new ObjectMapper();
+                map = oMapper.convertValue(user, Map.class);
+                return map;
+            }
         }
         return null;
     }
