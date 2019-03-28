@@ -7,6 +7,7 @@ import com.Be1StopClick.model.User;
 import com.Be1StopClick.model.UserProfile;
 import com.Be1StopClick.security.AppTokenProvider;
 import com.Be1StopClick.security.GoogleTokenVerifier;
+import com.Be1StopClick.util.IdUtility;
 import com.alibaba.fastjson.JSON;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
 
@@ -131,7 +132,7 @@ public class LoginFilter implements Filter {
         user.setEmail(userPayLoad.getEmail());
         UserProfile profile = new UserProfile();
         profile.setName(userPayLoad.get("name").toString());
-        profile.setImageUrl(userPayLoad.get("picture").toString());
+        //profile.setImageUrl(userPayLoad.get("picture").toString());
         user.setUserProfile(profile);
         if (userRepository.save(user)) {
             return user;
@@ -142,7 +143,7 @@ public class LoginFilter implements Filter {
     private User updateExistingUser(User existingUser, Payload userPayLoad) {
         UserProfile profile = existingUser.getUserProfile();
         profile.setName(userPayLoad.get("name").toString());
-        profile.setImageUrl(userPayLoad.get("picture").toString());
+        //profile.setImageUrl(userPayLoad.get("picture").toString());
         existingUser.setEmail(userPayLoad.get("email").toString());
         existingUser.setEmailVerified(Boolean.valueOf(userPayLoad.getEmailVerified()));
         existingUser.setUserProfile(profile);

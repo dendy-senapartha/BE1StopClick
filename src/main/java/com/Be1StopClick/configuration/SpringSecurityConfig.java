@@ -31,6 +31,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers("/rest/**").permitAll()
                     .antMatchers("/user/**").permitAll()
                     //- configure that any other type of request to our server otherwise should be authenticated.
+                    .antMatchers("/signup/**").permitAll()
                     .antMatchers("/").permitAll()
                 //- For /login and /rest/* based endpoints, our filters LoginFilter and RestFilter intercept
                 //  and validate the request before forwarding it to the endpoints to serve.

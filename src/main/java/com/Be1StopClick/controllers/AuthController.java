@@ -30,13 +30,12 @@ public class AuthController {
         Map<String, Object> map = new HashMap<String, Object>();
         Optional<Object> email = Optional.ofNullable(body.get("email"));
         Optional<Object> password = Optional.ofNullable(body.get("password"));
-        //LocalLoginRequest localLoginRequest=  JSON.parseObject(body, LocalLoginRequest.class);
         if (email.isPresent() && password.isPresent()) {
-            AppTokenProvider.addAuthentication(response, email.get().toString());
             Optional<User> userOptional = userRepository.findByEmailPassword(email.get().toString(), password.get().toString());
             User user;
             if (userOptional.isPresent()) {
                 user = userOptional.get();
+                AppTokenProvider.addAuthentication(response, user.getProviderId());
                 ObjectMapper oMapper = new ObjectMapper();
                 map = oMapper.convertValue(user, Map.class);
                 return map;

@@ -3,6 +3,8 @@ package com.Be1StopClick.model;
 import com.Be1StopClick.security.AuthProvider;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -14,15 +16,13 @@ import javax.validation.constraints.NotNull;
  */
 
 @Entity
-@Table(name = "users", uniqueConstraints = {
-        @UniqueConstraint(columnNames = "email")
-})
+@Table(name = "users")
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Email
     @Column(name = "email")
     private String email;
 
@@ -50,9 +50,20 @@ public class User {
 
     public User(Long id, String email, String password) {
         this.id = id;
-        this.email= email;
+        this.email = email;
         this.password = password;
     }
+
+    public User(Long id, String email, boolean emailVerified, String password,
+                String provider, String providerId) {
+        this.id = id;
+        this.email = email;
+        this.emailVerified = emailVerified;
+        this.password = password;
+        this.provider = provider;
+        this.providerId = providerId;
+    }
+
 
     public Long getId() {
         return id;

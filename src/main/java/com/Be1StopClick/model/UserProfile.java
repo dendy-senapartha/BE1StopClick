@@ -1,14 +1,19 @@
 package com.Be1StopClick.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+
+import javax.persistence.*;
 /*
  * Created by dendy-prtha on 05/03/2019.
  * model for user_profile table of database
  */
 
-import javax.persistence.*;
 
 @Entity
 @Table(name = "user_profile")
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class UserProfile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,19 +30,18 @@ public class UserProfile {
     public UserProfile() {
     }
 
-    public UserProfile(Long id, String name, String dob, String phone
-            , String profile_photo) {
+    public UserProfile(Long id, String name, String dob, String phone, String imageUrl) {
         this.setId(id);
         this.setName(name);
         this.setDob(dob);
         this.setPhone(phone);
-        this.setImageUrl(profile_photo);
+        this.setImageUrl(imageUrl);
     }
 
     @Override
     public String toString() {
         return "UserProfile [id=" + getId() + ", name=" + name +
-                ", dob=" + dob + ", phone=" + phone + ", imageUrl=" + imageUrl + "]";
+                ", dob=" + dob + ", phone=" + phone + ", imageUrl=" + "]";
     }
 
     public Long getId() {

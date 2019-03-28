@@ -34,9 +34,9 @@ public class RestFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
         Optional<String> userFromToken = getUserFromToken(request);
-
+        //TODO: need to check if user isvalid
         if (!userFromToken.isPresent()) {
-            response.sendError(HttpStatus.UNAUTHORIZED.value(),"ORA OLEH SUUUUU!" );
+            response.sendError(HttpStatus.UNAUTHORIZED.value(),"you have no permission!" );
             return;
         }
         request.setAttribute("userId", userFromToken.get());

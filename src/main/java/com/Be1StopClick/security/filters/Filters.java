@@ -19,11 +19,13 @@ public class Filters {
 
     private final LoginFilter loginFilter;
     private final RestFilter restFilter;
+    private final SignUpFilter signUpFilter;
 
     @Autowired
-    public Filters(LoginFilter loginFilter, RestFilter restFilter) {
+    public Filters(LoginFilter loginFilter, RestFilter restFilter, SignUpFilter signUpFilter) {
         this.loginFilter = loginFilter;
         this.restFilter = restFilter;
+        this.signUpFilter = signUpFilter;
     }
 
     @Bean
@@ -31,6 +33,14 @@ public class Filters {
         FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
         filterRegistrationBean.setFilter(loginFilter);
         filterRegistrationBean.setUrlPatterns(Collections.singletonList("/auth/*"));
+        return filterRegistrationBean;
+    }
+
+    @Bean
+    public FilterRegistrationBean signUpRegistrationBean() {
+        FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
+        filterRegistrationBean.setFilter(signUpFilter);
+        filterRegistrationBean.setUrlPatterns(Collections.singletonList("/signup/*"));
         return filterRegistrationBean;
     }
 

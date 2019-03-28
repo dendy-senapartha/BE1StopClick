@@ -35,6 +35,9 @@ public class UserRepository implements UserDao {
                     e.getId(),
                     e.getEmail(),
                     e.getPassword());
+            user.setProvider(e.getProvider());
+            user.setEmailVerified(e.getEmailVerified());
+            user.setProviderId(e.getProviderId());
             user.setUserProfile(e.getUserProfile());
         }
         return Optional.ofNullable(user);
@@ -55,6 +58,9 @@ public class UserRepository implements UserDao {
                     e.getId(),
                     e.getEmail(),
                     e.getPassword());
+            user.setProvider(e.getProvider());
+            user.setEmailVerified(e.getEmailVerified());
+            user.setProviderId(e.getProviderId());
             user.setUserProfile(e.getUserProfile());
         }
 
