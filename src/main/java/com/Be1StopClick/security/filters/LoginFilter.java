@@ -31,6 +31,9 @@ import java.util.stream.Collectors;
 @Component
 public class LoginFilter implements Filter {
 
+    public static final String USER_LOGIN = "user-login";
+    public static final String USER_FORGOT_PASSWORD = "user-forgot-password";
+
     private GoogleTokenVerifier googleTokenVerifier;
 
     @Autowired
@@ -55,44 +58,23 @@ public class LoginFilter implements Filter {
                          FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
-        String idToken = httpRequest.getHeader("X-ID-TOKEN");
-        String loginProvider = httpRequest.getHeader("PROVIDER");
         String errMsg = null;
+        String action = httpRequest.getParameter(RequestParam.ACTION);
         if (httpRequest.getMethod().equalsIgnoreCase("POST")) {
-            if (loginProvider != null) {
-                if (idToken != null) {
-                    try {
-                        switch (loginProvider) {
-                            case AuthProvider.GOOGLE:
-                                verifyGoogleToken(idToken, httpResponse);
-                                break;
-                            case AuthProvider.FACEBOOK:
-                                break;
-                            case AuthProvider.GITHUB:
-                                break;
-                        }
-                        //redirect to social login
-                        httpRequest.getRequestDispatcher("social-login").forward(httpRequest, httpResponse);
-                        //filterChain.doFilter(httpRequest, httpResponse);
+            switch (action) {
+                case USER_LOGIN:
+                    errMsg = doLogin(httpRequest, httpResponse);
+                    if (errMsg == null)
                         return;
-                    } catch (GeneralSecurityException | InvalidTokenException e) {
-                        // This is not a valid token, we will send HTTP 401 back
-                        errMsg = e.getMessage();
-                    }
-                } else {
-                    if (loginProvider.equalsIgnoreCase(AuthProvider.LOCAL)) {
-                        //String body = httpRequest.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
-                        //LocalLoginRequest localLoginRequest=  JSON.parseObject(body, LocalLoginRequest.class);
-                        //AppTokenProvider.addAuthentication(httpResponse, localLoginRequest.email);
-                        httpRequest.getRequestDispatcher("local-login").forward(httpRequest, httpResponse);
-                        //filterChain.doFilter(httpRequest, httpResponse);
+                    break;
+                case USER_FORGOT_PASSWORD:
+                    errMsg = sendEmail(httpRequest, httpResponse);
+                    if (errMsg == null)
                         return;
-                    } else {
-                        errMsg = "no token!";
-                    }
-                }
-            } else {
-                errMsg = "no provider!";
+                    return;
+                case "ASu":
+                    break;
+
             }
         }
 
@@ -102,6 +84,50 @@ public class LoginFilter implements Filter {
 
     @Override
     public void destroy() {
+    }
+
+    private String sendEmail(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
+            throws IOException, ServletException {
+        String errMsg = null;
+        httpRequest.getRequestDispatcher("/auth/forget-password").forward(httpRequest, httpResponse);
+        return errMsg;
+    }
+
+    private String doLogin(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
+            throws IOException, ServletException {
+        String errMsg = null;
+        String idToken = httpRequest.getHeader("X-ID-TOKEN");
+        String loginProvider = httpRequest.getHeader("PROVIDER");
+        if (loginProvider != null) {
+            if (idToken != null) {
+                try {
+                    switch (loginProvider) {
+                        case AuthProvider.GOOGLE:
+                            verifyGoogleToken(idToken, httpResponse);
+                            break;
+                        case AuthProvider.FACEBOOK:
+                            break;
+                        case AuthProvider.GITHUB:
+                            break;
+                    }
+                    //redirect to social login
+                    httpRequest.getRequestDispatcher("/auth/social-login").forward(httpRequest, httpResponse);
+                    //filterChain.doFilter(httpRequest, httpResponse);
+                } catch (GeneralSecurityException | InvalidTokenException e) {
+                    // This is not a valid token, we will send HTTP 401 back
+                    errMsg = e.getMessage();
+                }
+            } else {
+                if (loginProvider.equalsIgnoreCase(AuthProvider.LOCAL)) {
+                    httpRequest.getRequestDispatcher("/auth/local-login").forward(httpRequest, httpResponse);
+                } else {
+                    errMsg = "no token!";
+                }
+            }
+        } else {
+            errMsg = "no provider!";
+        }
+        return errMsg;
     }
 
     private void verifyGoogleToken(String idToken, HttpServletResponse httpResponse)
@@ -152,4 +178,6 @@ public class LoginFilter implements Filter {
         }
         return null;
     }
+
+
 }
