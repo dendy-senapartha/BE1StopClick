@@ -52,6 +52,7 @@ public class Filters {
         List<String> urls = new ArrayList<String>();
         urls.add("/rest/*");
         urls.add("/user/*");
+        urls.add("/movies/*");
         //filterRegistrationBean.setUrlPatterns(Collections.singletonList("/rest/*"));
         filterRegistrationBean.setUrlPatterns(urls);
         return filterRegistrationBean;
