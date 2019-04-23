@@ -53,17 +53,17 @@ public class AuthController {
     @PostMapping(value = "/auth/social-login",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> socialLogin(@RequestBody Map<String, Object> body) {
-        Map<String, Object> map = new HashMap<String, Object>();
+        //Map<String, Object> map = new HashMap<String, Object>();
         Optional<Object> email = Optional.ofNullable(body.get("email"));
         if (email.isPresent()) {
-            Optional<User> userOptional = userRepository.findByEmail(email.get().toString());
-            User user;
-            if (userOptional.isPresent()) {
-                user = userOptional.get();
-                ObjectMapper oMapper = new ObjectMapper();
-                map = oMapper.convertValue(user, Map.class);
-                return map;
-            }
+            //Optional<User> userOptional = userRepository.findByEmail(email.get().toString());
+           // User user;
+            //if (userOptional.isPresent()) {
+             //   user = userOptional.get();
+             //   ObjectMapper oMapper = new ObjectMapper();
+            //    map = oMapper.convertValue(user, Map.class);
+                return body;
+           // }
         }
         return null;
     }

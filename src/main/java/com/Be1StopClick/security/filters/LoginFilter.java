@@ -9,6 +9,7 @@ import com.Be1StopClick.security.AppTokenProvider;
 import com.Be1StopClick.security.GoogleTokenVerifier;
 import com.Be1StopClick.util.IdUtility;
 import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,7 +80,7 @@ public class LoginFilter implements Filter {
         }
 
         httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, errMsg);
-        return;
+
     }
 
     @Override
@@ -101,17 +102,24 @@ public class LoginFilter implements Filter {
         if (loginProvider != null) {
             if (idToken != null) {
                 try {
+                    RequestWrapper requestWrapper = new RequestWrapper(httpRequest);
+                    ObjectMapper mapper = new ObjectMapper();
+
                     switch (loginProvider) {
                         case AuthProvider.GOOGLE:
-                            verifyGoogleToken(idToken, httpResponse);
+                            User user = verifyGoogleToken(idToken, httpResponse);
+                            String json = mapper.writeValueAsString(user);
+                            requestWrapper.setBody(json);
                             break;
                         case AuthProvider.FACEBOOK:
                             break;
                         case AuthProvider.GITHUB:
                             break;
                     }
+
+                    requestWrapper.getBody();
                     //redirect to social login
-                    httpRequest.getRequestDispatcher("/auth/social-login").forward(httpRequest, httpResponse);
+                    httpRequest.getRequestDispatcher("/auth/social-login").forward(requestWrapper, httpResponse);
                     //filterChain.doFilter(httpRequest, httpResponse);
                 } catch (GeneralSecurityException | InvalidTokenException e) {
                     // This is not a valid token, we will send HTTP 401 back
@@ -130,24 +138,27 @@ public class LoginFilter implements Filter {
         return errMsg;
     }
 
-    private void verifyGoogleToken(String idToken, HttpServletResponse httpResponse)
+    private User verifyGoogleToken(String idToken, HttpServletResponse httpResponse)
             throws GeneralSecurityException, IOException, InvalidTokenException {
         Payload payload;
         payload = googleTokenVerifier.verify(idToken);
+        User user = null;
         if (payload != null) {
             //check if user are available
             Optional<User> userOptional = userRepository.findByEmail(payload.getEmail());
-            User user;
+
             if (userOptional.isPresent()) {
                 user = userOptional.get();
                 updateExistingUser(user, payload);
             } else {
-                registerNewUser(payload, AuthProvider.GOOGLE);
+                user = registerNewUser(payload, AuthProvider.GOOGLE);
             }
             String userId = payload.getSubject();
             //this one fakin pass by refrence
             AppTokenProvider.addAuthentication(httpResponse, userId);
         }
+
+        return user;
     }
 
     private User registerNewUser(Payload userPayLoad, String provider) {
