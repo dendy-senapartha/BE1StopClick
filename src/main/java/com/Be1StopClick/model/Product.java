@@ -57,6 +57,9 @@ public class Product {
     @JoinColumn(name = "subcategory_id")
     private Subcategory subcategory;
 
+    @Column(name = "product_art")
+    private String productArt;
+
     public int getId() {
         return id;
     }
@@ -143,5 +146,13 @@ public class Product {
 
     public void setSubcategory(Subcategory subcategory) {
         this.subcategory = subcategory;
+    }
+
+    public String getProductArt() {
+        return productArt;
+    }
+
+    public void setProductArt(String productArt) {
+        this.productArt = productArt;
     }
 }

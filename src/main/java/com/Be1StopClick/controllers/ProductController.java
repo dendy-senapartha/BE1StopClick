@@ -1,6 +1,7 @@
 package com.Be1StopClick.controllers;
 
 import com.Be1StopClick.dao.MovieDao;
+import com.Be1StopClick.dao.MusicDao;
 import com.Be1StopClick.model.Product;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,19 +21,34 @@ import java.util.Optional;
  */
 
 @RestController
-public class MovieController {
-
+public class ProductController {
 
     @Autowired
     private MovieDao movieRepository;
+
+    @Autowired
+    private MusicDao musicRepository;
 
     @PostMapping(value = "/movies/get-all",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, List<Product>> getAllMovie(@RequestBody Map<String, Object> body) {
         Map<String, List<Product>> map = new HashMap<>();
-        List<Product> productList = movieRepository.findAll();
-        if (!productList.isEmpty()) {
-            map.put("result", productList);
+        List<Product> movieList = movieRepository.findAll();
+        if (!movieList.isEmpty()) {
+            map.put("result", movieList);
+            return map;
+        }
+        map.put("result", null);
+        return map;
+    }
+
+    @PostMapping(value = "/musics/get-all",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, List<Product>> getAllMusic(@RequestBody Map<String, Object> body) {
+        Map<String, List<Product>> map = new HashMap<>();
+        List<Product> musicList = musicRepository.findAll();
+        if (!musicList.isEmpty()) {
+            map.put("result", musicList);
             return map;
         }
         map.put("result", null);
