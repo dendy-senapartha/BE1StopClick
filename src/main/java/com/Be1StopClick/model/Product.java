@@ -60,6 +60,12 @@ public class Product {
     @Column(name = "product_art")
     private String productArt;
 
+    @Column(name = "product_backdrop")
+    private String productBackdrop;
+
+    @Column(name = "youtube_trailer_id")
+    private String youtubeTrailerId;
+
     public int getId() {
         return id;
     }
@@ -154,5 +160,21 @@ public class Product {
 
     public void setProductArt(String productArt) {
         this.productArt = productArt;
+    }
+
+    public String getProductBackdrop() {
+        return productBackdrop;
+    }
+
+    public void setProductBackdrop(String productBackdrop) {
+        this.productBackdrop = productBackdrop;
+    }
+
+    public String getYoutubeTrailerId() {
+        return youtubeTrailerId;
+    }
+
+    public void setYoutubeTrailerId(String youtubeTrailerId) {
+        this.youtubeTrailerId = youtubeTrailerId;
     }
 }
