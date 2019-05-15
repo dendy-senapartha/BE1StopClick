@@ -1,8 +1,8 @@
 package com.Be1StopClick.dao.repository;
 
-import com.Be1StopClick.dao.MovieDao;
+import com.Be1StopClick.dao.ProductDao;
 import com.Be1StopClick.model.Product;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.Be1StopClick.model.ProductImage;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +19,7 @@ import java.util.Optional;
 
 @Transactional
 @Component
-public class MovieRepository implements MovieDao {
+public class ProductRepository implements ProductDao {
 
 
     @PersistenceContext
@@ -32,10 +32,15 @@ public class MovieRepository implements MovieDao {
 
     @Override
     public List<Product> findAll() {
+        return null;
+    }
+
+    @Override
+    public List<Product> findAllProductByCategoryId(int catId) {
         String hql = "SELECT DISTINCT prdct FROM Product prdct " +
                 "LEFT JOIN prdct.category ctgry " +
                 "LEFT JOIN prdct.subcategory sbctgry " +
-                "WHERE ctgry.id = 3";
+                "WHERE ctgry.id = " + catId;
         System.out.println(hql);
         Query query = entityManager.createQuery(hql);
         List<Product> results = query.getResultList();
@@ -56,4 +61,5 @@ public class MovieRepository implements MovieDao {
     public boolean delete(Product o) {
         return false;
     }
+
 }

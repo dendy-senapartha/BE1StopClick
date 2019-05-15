@@ -1,9 +1,7 @@
 package com.Be1StopClick.controllers;
 
-import com.Be1StopClick.dao.MovieDao;
-import com.Be1StopClick.dao.MusicDao;
+import com.Be1StopClick.dao.ProductDao;
 import com.Be1StopClick.model.Product;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /*
  * Created by dendy-prtha on 16/04/2019.
@@ -24,16 +21,14 @@ import java.util.Optional;
 public class ProductController {
 
     @Autowired
-    private MovieDao movieRepository;
+    private ProductDao productRepository;
 
-    @Autowired
-    private MusicDao musicRepository;
 
     @PostMapping(value = "/movies/get-all",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, List<Product>> getAllMovie(@RequestBody Map<String, Object> body) {
         Map<String, List<Product>> map = new HashMap<>();
-        List<Product> movieList = movieRepository.findAll();
+        List<Product> movieList = productRepository.findAllProductByCategoryId(3);
         if (!movieList.isEmpty()) {
             map.put("result", movieList);
             return map;
@@ -46,7 +41,7 @@ public class ProductController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, List<Product>> getAllMusic(@RequestBody Map<String, Object> body) {
         Map<String, List<Product>> map = new HashMap<>();
-        List<Product> musicList = musicRepository.findAll();
+        List<Product> musicList = productRepository.findAllProductByCategoryId(6);
         if (!musicList.isEmpty()) {
             map.put("result", musicList);
             return map;
