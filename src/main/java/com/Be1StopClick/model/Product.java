@@ -42,9 +42,6 @@ public class Product {
     @Column(name = "compatibility")
     private String compatibility;
 
-    @Column(name = "urldownload")
-    private String urldownload;
-
     @Column(name = "status")
     private String status;
 
@@ -60,9 +57,6 @@ public class Product {
     @JoinColumn(name = "subcategory_id")
     private Subcategory subcategory;
 
-    @Column(name = "youtube_trailer_id")
-    private String youtubeTrailerId;
-
     @OneToMany(
             cascade = CascadeType.ALL,
             orphanRemoval = true,
@@ -76,6 +70,16 @@ public class Product {
     @JsonManagedReference // a part with the annotation will be serialized normally.
     @JsonIgnoreProperties("product")
     private List<ProductImage> productImageList= new ArrayList<>();
+
+    @OneToMany(
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    @JoinColumn(name = "product_id")
+    @JsonManagedReference // a part with the annotation will be serialized normally.
+    @JsonIgnoreProperties("product")
+    private List<Video> videoList= new ArrayList<>();
 
     public int getId() {
         return id;
@@ -125,14 +129,6 @@ public class Product {
         this.compatibility = compatibility;
     }
 
-    public String getUrldownload() {
-        return urldownload;
-    }
-
-    public void setUrldownload(String urldownload) {
-        this.urldownload = urldownload;
-    }
-
     public String getStatus() {
         return status;
     }
@@ -165,19 +161,19 @@ public class Product {
         this.subcategory = subcategory;
     }
 
-    public String getYoutubeTrailerId() {
-        return youtubeTrailerId;
-    }
-
-    public void setYoutubeTrailerId(String youtubeTrailerId) {
-        this.youtubeTrailerId = youtubeTrailerId;
-    }
-
     public List<ProductImage> getProductImageList() {
         return productImageList;
     }
 
     public void setProductImageList(List<ProductImage> productImageList) {
         this.productImageList = productImageList;
+    }
+
+    public List<Video> getVideoList() {
+        return videoList;
+    }
+
+    public void setVideoList(List<Video> videoList) {
+        this.videoList = videoList;
     }
 }
