@@ -81,6 +81,16 @@ public class Product {
     @JsonIgnoreProperties("product")
     private List<Video> videoList= new ArrayList<>();
 
+    @OneToMany(
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    @JoinColumn(name = "product_id")
+    @JsonManagedReference // a part with the annotation will be serialized normally.
+    @JsonIgnoreProperties("product")
+    private List<Track> trackList = new ArrayList<>();
+
     public int getId() {
         return id;
     }
@@ -175,5 +185,13 @@ public class Product {
 
     public void setVideoList(List<Video> videoList) {
         this.videoList = videoList;
+    }
+
+    public List<Track> getTrackList() {
+        return trackList;
+    }
+
+    public void setTrackList(List<Track> trackList) {
+        this.trackList = trackList;
     }
 }

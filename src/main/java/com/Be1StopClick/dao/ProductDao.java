@@ -11,5 +11,5 @@ import java.util.List;
  */
 
 public interface ProductDao extends Dao<Product, Integer> {
-    public List<Product> findAllProductByCategoryId(int catId) ;
+    List<Product> findAllProductByCategoryId(int catId) ;
 }

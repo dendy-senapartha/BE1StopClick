@@ -7,5 +7,5 @@ package com.Be1StopClick.security.filters;
 
 public interface RequestParam {
 
-    public static final String ACTION = "action";
+    String ACTION = "action";
 }
