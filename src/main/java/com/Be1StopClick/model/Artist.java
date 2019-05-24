@@ -1,10 +1,14 @@
 package com.Be1StopClick.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /*
  * Created by dendy-prtha on 21/05/2019.
@@ -28,6 +32,12 @@ public class Artist {
 
     @Column(name = "dob")
     private Date dob;
+
+    //bidirectional mapping. it refrence the atribut on the employee entity
+    @ManyToMany(mappedBy="artists", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @JsonManagedReference //a part with the annotation will be omitted from serialization.
+    @JsonIgnoreProperties("artists")
+    private List<Track> tracks = new ArrayList();
 
     public int getId() {
         return id;
@@ -59,5 +69,13 @@ public class Artist {
 
     public void setDob(Date dob) {
         this.dob = dob;
+    }
+
+    public List<Track> getTracks() {
+        return tracks;
+    }
+
+    public void setTracks(List<Track> tracks) {
+        this.tracks = tracks;
     }
 }

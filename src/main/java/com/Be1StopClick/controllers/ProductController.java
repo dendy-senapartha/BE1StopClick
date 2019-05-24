@@ -1,6 +1,7 @@
 package com.Be1StopClick.controllers;
 
 import com.Be1StopClick.dao.ProductDao;
+import com.Be1StopClick.model.Album;
 import com.Be1StopClick.model.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -44,6 +45,19 @@ public class ProductController {
         List<Product> musicList = productRepository.findAllProductByCategoryId(6);
         if (!musicList.isEmpty()) {
             map.put("result", musicList);
+            return map;
+        }
+        map.put("result", null);
+        return map;
+    }
+
+    @PostMapping(value = "/musics/get-all-album",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, List<Album>> getAllMusicAlbum(@RequestBody Map<String, Object> body) {
+        Map<String, List<Album>> map = new HashMap<>();
+        List<Album> albumList = productRepository.findAllAlbum();
+        if (!albumList.isEmpty()) {
+            map.put("result", albumList);
             return map;
         }
         map.put("result", null);

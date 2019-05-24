@@ -1,5 +1,6 @@
 package com.Be1StopClick.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -42,6 +43,7 @@ public class Track {
             joinColumns={@JoinColumn(name="track_id", referencedColumnName="id")},
             inverseJoinColumns={@JoinColumn(name="album_id", referencedColumnName="id")})
     @JsonManagedReference // a part with the annotation will be serialized normally.
+    @JsonIgnoreProperties("tracks")
     private List<Album> albums= new ArrayList<>();
 
     @ManyToMany
@@ -50,6 +52,7 @@ public class Track {
             joinColumns={@JoinColumn(name="track_id", referencedColumnName="id")},
             inverseJoinColumns={@JoinColumn(name="artist_id", referencedColumnName="id")})
     @JsonManagedReference // a part with the annotation will be serialized normally.
+    @JsonIgnoreProperties("tracks")
     private List<Artist> artists= new ArrayList<>();
 
     public int getId() {

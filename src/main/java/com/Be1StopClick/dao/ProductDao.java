@@ -1,5 +1,6 @@
 package com.Be1StopClick.dao;
 
+import com.Be1StopClick.model.Album;
 import com.Be1StopClick.model.Product;
 import com.Be1StopClick.model.ProductImage;
 
@@ -12,4 +13,5 @@ import java.util.List;
 
 public interface ProductDao extends Dao<Product, Integer> {
     List<Product> findAllProductByCategoryId(int catId) ;
+    List<Album> findAllAlbum() ;
 }

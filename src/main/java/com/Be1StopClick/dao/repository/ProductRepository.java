@@ -1,6 +1,7 @@
 package com.Be1StopClick.dao.repository;
 
 import com.Be1StopClick.dao.ProductDao;
+import com.Be1StopClick.model.Album;
 import com.Be1StopClick.model.Product;
 import com.Be1StopClick.model.ProductImage;
 import org.springframework.stereotype.Component;
@@ -44,6 +45,19 @@ public class ProductRepository implements ProductDao {
         System.out.println(hql);
         Query query = entityManager.createQuery(hql);
         List<Product> results = query.getResultList();
+        return results;
+    }
+
+    @Override
+    public List<Album> findAllAlbum() {
+        String hql = "SELECT DISTINCT trck.albums FROM Track trck " +
+                "INNER JOIN trck.product prdct " +
+                "INNER JOIN trck.albums albm " +
+                "INNER JOIN trck.trackType trcktyp " +
+                "LEFT JOIN trck.artists arts";
+        System.out.println(hql);
+        Query query = entityManager.createQuery(hql);
+         List<Album> results = query.getResultList();
         return results;
     }
 
