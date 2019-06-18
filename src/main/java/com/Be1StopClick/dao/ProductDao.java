@@ -14,4 +14,8 @@ import java.util.List;
 public interface ProductDao extends Dao<Product, Integer> {
     List<Product> findAllProductByCategoryId(int catId) ;
     List<Album> findAllAlbum() ;
+    List<Product> findProductByCategoryIdAndTitle(int catId, String title);
+    List<Product> getBuyedProductOfUserByCategory(int catId, String userId);
+    List<Product> findBuyedProductOfUserByCategoryAndProdId(int catId, String userId, String productId);
+    List<Product> findBuyedProductOfUserByCategoryAndProductName(int catId, String userId, String productName);
 }

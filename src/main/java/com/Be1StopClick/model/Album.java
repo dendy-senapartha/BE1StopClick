@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -34,7 +35,8 @@ public class Album {
     private String albumImageUrl;
 
     //bidirectional mapping. it refrence the atribut on the employee entity
-    @ManyToMany(mappedBy="albums", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @ManyToMany(mappedBy="albums", fetch = FetchType.LAZY)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JsonManagedReference //a part with the annotation will be omitted from serialization.
     @JsonIgnoreProperties("albums")
     private List<Track> tracks = new ArrayList();

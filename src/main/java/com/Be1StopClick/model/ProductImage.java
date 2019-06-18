@@ -2,6 +2,8 @@ package com.Be1StopClick.model;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import org.hibernate.Hibernate;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 
@@ -19,11 +21,8 @@ public class ProductImage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "product_id")
-    private Product product;
-
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinColumn(name = "image_type_id")
     private ProductImageType productImageType;
 
@@ -38,16 +37,8 @@ public class ProductImage {
         this.id = id;
     }
 
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
-    }
-
     public ProductImageType getProductImageType() {
-        return productImageType;
+        return (ProductImageType) Hibernate.unproxy(productImageType);
     }
 
     public void setProductImageType(ProductImageType productImageType) {

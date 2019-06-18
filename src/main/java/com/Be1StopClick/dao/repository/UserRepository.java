@@ -1,8 +1,12 @@
 package com.Be1StopClick.dao.repository;
 
 import com.Be1StopClick.dao.UserDao;
+import com.Be1StopClick.model.Invoice;
+import com.Be1StopClick.model.Orders;
 import com.Be1StopClick.model.User;
+import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
+import org.hibernate.proxy.HibernateProxy;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +34,7 @@ public class UserRepository implements UserDao {
         query.setParameter("userName", userName);
         List<User> results = query.getResultList();
         User user = null;
-        for( User e:results ) {
+        for (User e : results) {
             user = new User(
                     e.getId(),
                     e.getEmail(),
@@ -46,14 +50,14 @@ public class UserRepository implements UserDao {
     @Override
     public Optional<User> findByEmailPassword(String email, String password) {
         String hql = "FROM User user WHERE user.email LIKE :email AND user.password LIKE :password";
-        System.out.println(hql);
         Query query = entityManager.createQuery(hql);
         query.setParameter("email", email);
         query.setParameter("password", password);
+        System.out.println("Query : " + query.toString());
 
         List<User> results = query.getResultList();
         User user = null;
-        for( User e:results ) {
+        for (User e : results) {
             user = new User(
                     e.getId(),
                     e.getEmail(),
@@ -62,6 +66,11 @@ public class UserRepository implements UserDao {
             user.setEmailVerified(e.getEmailVerified());
             user.setProviderId(e.getProviderId());
             user.setUserProfile(e.getUserProfile());
+            //user.setBalanceList(e.getBalanceList());
+            //user.setInvoiceList(e.getInvoiceList());
+
+            //Orders order = user.getInvoiceList().get(0).getOrders();
+           // System.out.println(order);
         }
 
         return Optional.ofNullable(user);
@@ -75,7 +84,7 @@ public class UserRepository implements UserDao {
         query.setParameter("email", email);
         List<User> results = query.getResultList();
         User user = null;
-        for( User e:results ) {
+        for (User e : results) {
             user = new User(
                     e.getId(),
                     e.getEmail(),
@@ -85,6 +94,8 @@ public class UserRepository implements UserDao {
             user.setEmailVerified(e.getEmailVerified());
             user.setProviderId(e.getProviderId());
             user.setUserProfile(e.getUserProfile());
+            //user.setBalanceList(e.getBalanceList());
+            //user.setInvoiceList(e.getInvoiceList());
         }
         return Optional.ofNullable(user);
     }
@@ -101,7 +112,7 @@ public class UserRepository implements UserDao {
         List<User> results = query.getResultList();
         //session.close();
         User user = null;
-        for( User e:results ) {
+        for (User e : results) {
             user = new User(
                     e.getId(),
                     e.getEmail(),
@@ -123,14 +134,11 @@ public class UserRepository implements UserDao {
     @Override
     public boolean save(User user) {
         boolean status;
-        try
-        {
+        try {
             entityManager.persist(user);
             status = true;
-        }
-        catch (HibernateException ex)
-        {
-            System.out.println("exception: "+ex);
+        } catch (HibernateException ex) {
+            System.out.println("exception: " + ex);
             status = false;
         }
 
@@ -140,15 +148,12 @@ public class UserRepository implements UserDao {
     @Override
     public boolean update(User user) {
 
-        boolean status = false ;
-        try
-        {
+        boolean status = false;
+        try {
             entityManager.merge(user);
             status = true;
-        }
-        catch (HibernateException ex)
-        {
-            System.out.println("exception: "+ex);
+        } catch (HibernateException ex) {
+            System.out.println("exception: " + ex);
         }
 
         return status;
@@ -157,15 +162,12 @@ public class UserRepository implements UserDao {
     @Override
     public boolean delete(User user) {
 
-        boolean status = false ;
-        try
-        {
+        boolean status = false;
+        try {
             entityManager.remove(entityManager.contains(user) ? user : entityManager.merge(user));
             status = true;
-        }
-        catch (HibernateException ex)
-        {
-            System.out.println("exception: "+ex);
+        } catch (HibernateException ex) {
+            System.out.println("exception: " + ex);
         }
         return status;
     }

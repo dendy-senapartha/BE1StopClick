@@ -1,9 +1,7 @@
 package com.Be1StopClick.dao.repository;
 
 import com.Be1StopClick.dao.ProductDao;
-import com.Be1StopClick.model.Album;
-import com.Be1StopClick.model.Product;
-import com.Be1StopClick.model.ProductImage;
+import com.Be1StopClick.model.*;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,10 +36,7 @@ public class ProductRepository implements ProductDao {
 
     @Override
     public List<Product> findAllProductByCategoryId(int catId) {
-        String hql = "SELECT DISTINCT prdct FROM Product prdct " +
-                "LEFT JOIN prdct.category ctgry " +
-                "LEFT JOIN prdct.subcategory sbctgry " +
-                "WHERE ctgry.id = " + catId;
+        String hql = "FROM Product prdct WHERE prdct.category.id = " + catId;
         System.out.println(hql);
         Query query = entityManager.createQuery(hql);
         List<Product> results = query.getResultList();
@@ -50,14 +45,76 @@ public class ProductRepository implements ProductDao {
 
     @Override
     public List<Album> findAllAlbum() {
-        String hql = "SELECT DISTINCT trck.albums FROM Track trck " +
-                "INNER JOIN trck.product prdct " +
-                "INNER JOIN trck.albums albm " +
-                "INNER JOIN trck.trackType trcktyp " +
-                "LEFT JOIN trck.artists arts";
+        String hql = "From Album";
         System.out.println(hql);
         Query query = entityManager.createQuery(hql);
-         List<Album> results = query.getResultList();
+        List<Album> results = query.getResultList();
+        return results;
+    }
+
+    @Override
+    public List<Product> findProductByCategoryIdAndTitle(int catId, String title) {
+        String hql = "SELECT DISTINCT prdct FROM Product prdct " +
+                "LEFT JOIN prdct.category ctgry " +
+                "LEFT JOIN prdct.subcategory sbctgry " +
+                "WHERE ctgry.id = " + catId +
+                "AND prdct.productName LIKE '%" + title + "%'";
+
+        Query query = entityManager.createQuery(hql);
+        List<Product> results = query.getResultList();
+        return results;
+    }
+
+    @Override
+    public List<Product> getBuyedProductOfUserByCategory(int catId, String userId) {
+        String hql = "SELECT DISTINCT prdct FROM Invoice invc " +
+                "INNER JOIN invc.user usr " +
+                "INNER JOIN invc.orders ordrs " +
+                "INNER JOIN invc.receipt rcpt " +
+                "INNER JOIN ordrs.itemList ordritm " +
+                "INNER JOIN ordritm.product prdct " +
+                "INNER JOIN prdct.category ctgry " +
+                "WHERE ctgry.id = " + catId +
+                "AND usr.id =" + userId;
+
+        Query query = entityManager.createQuery(hql);
+        List<Product> results = query.getResultList();
+        return results;
+    }
+
+    @Override
+    public List<Product> findBuyedProductOfUserByCategoryAndProdId(int catId, String userId, String productId) {
+        String hql = "SELECT DISTINCT prdct FROM Invoice invc " +
+                "INNER JOIN invc.user usr " +
+                "INNER JOIN invc.orders ordrs " +
+                "INNER JOIN invc.receipt rcpt " +
+                "INNER JOIN ordrs.itemList ordritm " +
+                "INNER JOIN ordritm.product prdct " +
+                "INNER JOIN prdct.category ctgry " +
+                "WHERE ctgry.id = " + catId + " " +
+                "AND usr.id = " + userId + " " +
+                "AND prdct.id = " + productId;
+
+        Query query = entityManager.createQuery(hql);
+        List<Product> results = query.getResultList();
+        return results;
+    }
+
+    @Override
+    public List<Product> findBuyedProductOfUserByCategoryAndProductName(int catId, String userId, String productName) {
+        String hql = "SELECT DISTINCT prdct FROM Invoice invc " +
+                "INNER JOIN invc.user usr " +
+                "INNER JOIN invc.orders ordrs " +
+                "INNER JOIN invc.receipt rcpt " +
+                "INNER JOIN ordrs.itemList ordritm " +
+                "INNER JOIN ordritm.product prdct " +
+                "INNER JOIN prdct.category ctgry " +
+                "WHERE ctgry.id = " + catId + " " +
+                "AND usr.id = " + userId + " " +
+                "AND prdct.productName LIKE '%" + productName + "%'";
+
+        Query query = entityManager.createQuery(hql);
+        List<Product> results = query.getResultList();
         return results;
     }
 

@@ -3,6 +3,7 @@ package com.Be1StopClick.model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -78,7 +79,7 @@ public class Subcategory {
     }
 
     public Category getCategory() {
-        return category;
+        return (Category) Hibernate.unproxy(category);
     }
 
     public void setCategory(Category category) {

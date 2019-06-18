@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import org.hibernate.Hibernate;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -23,11 +25,13 @@ public class Track {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinColumn(name = "track_type_id")
     private TrackType trackType;
 
@@ -37,7 +41,7 @@ public class Track {
     @Column(name = "length")
     private int length;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name="track_album",
             joinColumns={@JoinColumn(name="track_id", referencedColumnName="id")},
@@ -46,7 +50,7 @@ public class Track {
     @JsonIgnoreProperties("tracks")
     private List<Album> albums= new ArrayList<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name="track_artist",
             joinColumns={@JoinColumn(name="track_id", referencedColumnName="id")},
@@ -64,7 +68,7 @@ public class Track {
     }
 
     public Product getProduct() {
-        return product;
+        return (Product) Hibernate.unproxy(product);
     }
 
     public void setProduct(Product product) {
@@ -88,7 +92,7 @@ public class Track {
     }
 
     public TrackType getTrackType() {
-        return trackType;
+        return (TrackType) Hibernate.unproxy(trackType);
     }
 
     public void setTrackType(TrackType trackType) {

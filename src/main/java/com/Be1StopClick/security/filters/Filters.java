@@ -54,6 +54,10 @@ public class Filters {
         urls.add("/user/*");
         urls.add("/movies/*");
         urls.add("/musics/*");
+        urls.add("/order/*");
+        urls.add("/balance/*");
+        urls.add("/video/*");
+        urls.add("/track/*");
         //filterRegistrationBean.setUrlPatterns(Collections.singletonList("/rest/*"));
         filterRegistrationBean.setUrlPatterns(urls);
         return filterRegistrationBean;

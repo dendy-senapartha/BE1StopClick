@@ -184,6 +184,7 @@ public class LoginFilter implements Filter {
         existingUser.setEmail(userPayLoad.get("email").toString());
         existingUser.setEmailVerified(Boolean.valueOf(userPayLoad.getEmailVerified()));
         existingUser.setUserProfile(profile);
+        //existingUser.setInvoiceList();
         if (userRepository.update(existingUser)) {
             return existingUser;
         }

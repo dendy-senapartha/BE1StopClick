@@ -10,7 +10,6 @@ import javax.persistence.*;
  * model for user_profile table of database
  */
 
-
 @Entity
 @Table(name = "user_profile")
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
@@ -26,6 +25,10 @@ public class UserProfile {
     private String phone;
     @Column(name = "image_url")
     private String imageUrl;
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     public UserProfile() {
     }
@@ -82,5 +85,10 @@ public class UserProfile {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+
+    public User getUser() {
+        return user;
     }
 }

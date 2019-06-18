@@ -1,14 +1,16 @@
 package com.Be1StopClick.model;
 
-import com.Be1StopClick.security.AuthProvider;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 /*
  * Created by dendy-prtha on 01/03/2019.
@@ -40,9 +42,10 @@ public class User {
     @Column(name = "provider_id")
     private String providerId;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_profile_id")
-    @JsonManagedReference
+    @OneToOne(mappedBy = "user",
+            fetch = FetchType.LAZY, optional = false)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @JsonIgnoreProperties("user")
     private UserProfile userProfile;
 
     public User() {
@@ -81,13 +84,6 @@ public class User {
         this.password = password;
     }
 
-    public UserProfile getUserProfile() {
-        return userProfile;
-    }
-
-    public void setUserProfile(UserProfile userProfile) {
-        this.userProfile = userProfile;
-    }
 
     public String getEmail() {
         return email;
@@ -126,4 +122,11 @@ public class User {
         return "User [id=" + id + ", email=" + email + ", password=" + password + "]";
     }
 
+    public UserProfile getUserProfile() {
+        return userProfile;
+    }
+
+    public void setUserProfile(UserProfile userProfile) {
+        this.userProfile = userProfile;
+    }
 }

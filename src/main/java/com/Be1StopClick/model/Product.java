@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import org.hibernate.Hibernate;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -36,7 +38,7 @@ public class Product {
     private BigDecimal price;
 
     @Column(name = "description")
-    @Type(type="text")
+    @Type(type = "text")
     private String description;
 
     @Column(name = "compatibility")
@@ -45,51 +47,26 @@ public class Product {
     @Column(name = "status")
     private String status;
 
-    @Column(name = "created", columnDefinition="DATETIME")
+    @Column(name = "created", columnDefinition = "DATETIME")
     @Temporal(TemporalType.TIMESTAMP)
     private Date created;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinColumn(name = "subcategory_id")
     private Subcategory subcategory;
 
-    @OneToMany(
-            cascade = CascadeType.ALL,
-            orphanRemoval = true,
-            // by default, fetch mode in one to many are set to lazy for optimization reason.
-            // Now we set as EAGER for view purpose
-            // However, any other call on the indirect collection, e.g., size() or isEmpty()
-            // will instantiate the object.
-            fetch = FetchType.LAZY
-    )
+    @OneToMany(fetch = FetchType.LAZY)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinColumn(name = "product_id")
     @JsonManagedReference // a part with the annotation will be serialized normally.
     @JsonIgnoreProperties("product")
-    private List<ProductImage> productImageList= new ArrayList<>();
-
-    @OneToMany(
-            cascade = CascadeType.ALL,
-            orphanRemoval = true,
-            fetch = FetchType.LAZY
-    )
-    @JoinColumn(name = "product_id")
-    @JsonManagedReference // a part with the annotation will be serialized normally.
-    @JsonIgnoreProperties("product")
-    private List<Video> videoList= new ArrayList<>();
-
-    @OneToMany(
-            cascade = CascadeType.ALL,
-            orphanRemoval = true,
-            fetch = FetchType.LAZY
-    )
-    @JoinColumn(name = "product_id")
-    @JsonManagedReference // a part with the annotation will be serialized normally.
-    @JsonIgnoreProperties("product")
-    private List<Track> trackList = new ArrayList<>();
+    private List<ProductImage> productImageList = new ArrayList<>();
 
     public int getId() {
         return id;
@@ -156,7 +133,7 @@ public class Product {
     }
 
     public Category getCategory() {
-        return category;
+        return (Category) Hibernate.unproxy(category);
     }
 
     public void setCategory(Category category) {
@@ -164,7 +141,7 @@ public class Product {
     }
 
     public Subcategory getSubcategory() {
-        return subcategory;
+        return (Subcategory) Hibernate.unproxy(subcategory);
     }
 
     public void setSubcategory(Subcategory subcategory) {
@@ -179,19 +156,6 @@ public class Product {
         this.productImageList = productImageList;
     }
 
-    public List<Video> getVideoList() {
-        return videoList;
-    }
 
-    public void setVideoList(List<Video> videoList) {
-        this.videoList = videoList;
-    }
 
-    public List<Track> getTrackList() {
-        return trackList;
-    }
-
-    public void setTrackList(List<Track> trackList) {
-        this.trackList = trackList;
-    }
 }
