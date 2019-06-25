@@ -66,7 +66,7 @@ public class UserController {
         Object usrPrflObject = body.get("user_profile");
         UserProfile usrPrfl = objectMapper.convertValue(usrPrflObject, UserProfile.class);
         User user = new User(null, email, emailVerified, password, provider, provider_id);
-        user.setUserProfile(new UserProfile(null, usrPrfl.getName(),
+        user.addUserProfile(new UserProfile(null, usrPrfl.getName(),
                 usrPrfl.getDob(), usrPrfl.getPhone(), usrPrfl.getImageUrl()));
 
         Map<String, String> map = new HashMap<String, String>();
@@ -74,7 +74,7 @@ public class UserController {
         return map;
     }
 
-    @PostMapping("/user/update")
+    @PostMapping(value = "/user/update", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Map<String, String> updateUser(@RequestBody Map<String, Object> body) {
         String id = body.get("id").toString();
@@ -84,14 +84,17 @@ public class UserController {
         Object usrPrflObject = body.get("user_profile");
         UserProfile usrPrfl = objectMapper.convertValue(usrPrflObject, UserProfile.class);
         User user = new User(Long.parseLong(id), username, password);
-        user.setUserProfile(new UserProfile(usrPrfl.getId(), usrPrfl.getName(),
-                usrPrfl.getDob(), usrPrfl.getPhone(), usrPrfl.getImageUrl()));
+        user.getUserProfile().setName(usrPrfl.getName());
+        user.getUserProfile().setDob(usrPrfl.getDob());
+        user.getUserProfile().setPhone(usrPrfl.getPhone());
+        user.getUserProfile().setImageUrl(usrPrfl.getImageUrl());
+
         Map<String, String> map = new HashMap<String, String>();
         map.put("result", "" + userRepository.update(user));
         return map;
     }
 
-    @PostMapping("/user/delete")
+    @PostMapping(value = "/user/delete", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Map<String, String> deleteUser(@RequestBody Map<String, Object> body) {
         String id = body.get("id").toString();

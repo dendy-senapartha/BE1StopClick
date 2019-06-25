@@ -1,5 +1,9 @@
-package com.Be1StopClick.model;
+package com.Be1StopClick.dto;
 
+import com.Be1StopClick.model.Category;
+import com.Be1StopClick.model.ProductImage;
+import com.Be1StopClick.model.Subcategory;
+import com.Be1StopClick.model.Track;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
@@ -16,64 +20,32 @@ import java.util.List;
 
 /*
  * Created by dendy-prtha on 05/04/2019.
- * Product model
+ * movie DTO
  */
 
-@Entity
-@Table(name = "product")
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class Product {
+public class MovieDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "product_name")
     private String productName;
 
-    @Column(name = "package_code")
     private BigDecimal packageCode;
 
-    @Column(name = "price")
     private BigDecimal price;
 
-    @Column(name = "description")
-    @Type(type = "text")
     private String description;
 
-    @Column(name = "compatibility")
     private String compatibility;
 
-    @Column(name = "status")
     private String status;
 
-    @Column(name = "created", columnDefinition = "DATETIME")
-    @Temporal(TemporalType.TIMESTAMP)
     private Date created;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @JoinColumn(name = "category_id")
     private Category category;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @JoinColumn(name = "subcategory_id")
     private Subcategory subcategory;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @JoinColumn(name = "product_id")
-    @JsonManagedReference // a part with the annotation will be serialized normally.
-    @JsonIgnoreProperties("product")
     private List<ProductImage> productImageList = new ArrayList<>();
-
-    @OneToMany(fetch = FetchType.LAZY)
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @JoinColumn(name = "product_id")
-    @JsonManagedReference // a part with the annotation will be serialized normally.
-    @JsonIgnoreProperties("product")
-    private List<Track> trackList = new ArrayList<>();
 
     public int getId() {
         return id;
@@ -161,14 +133,5 @@ public class Product {
 
     public void setProductImageList(List<ProductImage> productImageList) {
         this.productImageList = productImageList;
-    }
-
-
-    public List<Track> getTrackList() {
-        return trackList;
-    }
-
-    public void setTrackList(List<Track> trackList) {
-        this.trackList = trackList;
     }
 }

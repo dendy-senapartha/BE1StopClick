@@ -2,6 +2,7 @@ package com.Be1StopClick.dao.repository;
 
 import com.Be1StopClick.dao.TrackDao;
 import com.Be1StopClick.dao.VideoDao;
+import com.Be1StopClick.model.Product;
 import com.Be1StopClick.model.Track;
 import com.Be1StopClick.model.Video;
 import org.springframework.stereotype.Component;
@@ -26,7 +27,17 @@ public class TrackRepository implements TrackDao {
 
     @Override
     public List<Track> findTrackByProductId(String productId) {
-        String hql ="FROM Track track WHERE track.product.id = :productId";
+        String hql = "FROM Track track WHERE track.product.id = :productId";
+        System.out.println(hql);
+        Query query = entityManager.createQuery(hql);
+        query.setParameter("productId", Integer.parseInt(productId));
+        List<Track> results = query.getResultList();
+        return results;
+    }
+
+    @Override
+    public List<Track> getTracksByAlbumAndUserId(String productId) {
+        String hql = "FROM Track track WHERE track.product.id = :productId";
         System.out.println(hql);
         Query query = entityManager.createQuery(hql);
         query.setParameter("productId", Integer.parseInt(productId));

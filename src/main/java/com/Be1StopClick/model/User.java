@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
@@ -43,8 +44,8 @@ public class User {
     private String providerId;
 
     @OneToOne(mappedBy = "user",
-            fetch = FetchType.LAZY, optional = false)
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
     @JsonIgnoreProperties("user")
     private UserProfile userProfile;
 
@@ -126,7 +127,17 @@ public class User {
         return userProfile;
     }
 
-    public void setUserProfile(UserProfile userProfile) {
+    //public void setUserProfile(UserProfile userProfile) {
+    public void addUserProfile(UserProfile userProfile) {
         this.userProfile = userProfile;
+        userProfile.setUser(this);
     }
+
+    public void removeUserProfile(UserProfile userProfile) {
+        if(userProfile !=null){
+            userProfile.setUser(null);
+        }
+        this.userProfile = null;
+    }
+
 }

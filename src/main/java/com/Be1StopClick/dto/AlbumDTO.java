@@ -1,11 +1,10 @@
-package com.Be1StopClick.model;
+package com.Be1StopClick.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.Be1StopClick.model.Track;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -14,31 +13,18 @@ import java.util.List;
 
 /*
  * Created by dendy-prtha on 21/05/2019.
- * entity Album
+ * DTO for Album request
  */
 
-@Entity
-@Table(name = "albums")
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class Album {
+public class AlbumDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "name")
     private String name;
 
-    @Column(name = "release_date")
     private Date releaseDate;
 
-    @Column(name = "album_image_url")
     private String albumImageUrl;
-
-    @OneToMany(mappedBy = "album", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonManagedReference //a part with the annotation will be omitted from serialization.
-    @JsonIgnoreProperties("album")
-    private List<Track> tracks = new ArrayList();
 
     public int getId() {
         return id;
@@ -62,20 +48,6 @@ public class Album {
 
     public void setReleaseDate(Date releaseDate) {
         this.releaseDate = releaseDate;
-    }
-
-    public List<Track> getTracks() {
-        return tracks;
-    }
-
-    public void addTracks(Track track) {
-        this.tracks.add(track);
-        track.setAlbum(this);
-    }
-
-    public void removeTrack(Track track){
-        track.setAlbum(null);
-        this.tracks.remove(track);
     }
 
     public String getAlbumImageUrl() {

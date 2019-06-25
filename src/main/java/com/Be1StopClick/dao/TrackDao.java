@@ -1,4 +1,5 @@
 package com.Be1StopClick.dao;
+import com.Be1StopClick.model.Product;
 import com.Be1StopClick.model.Track;
 import com.Be1StopClick.model.Video;
 
@@ -10,4 +11,5 @@ import java.util.List;
 
 public interface TrackDao extends Dao<Track, Integer> {
     List<Track> findTrackByProductId(String productId);
+    List<Track> getTracksByAlbumAndUserId(String productId);
 }

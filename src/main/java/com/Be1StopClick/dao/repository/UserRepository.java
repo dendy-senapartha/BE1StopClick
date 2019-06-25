@@ -35,14 +35,7 @@ public class UserRepository implements UserDao {
         List<User> results = query.getResultList();
         User user = null;
         for (User e : results) {
-            user = new User(
-                    e.getId(),
-                    e.getEmail(),
-                    e.getPassword());
-            user.setProvider(e.getProvider());
-            user.setEmailVerified(e.getEmailVerified());
-            user.setProviderId(e.getProviderId());
-            user.setUserProfile(e.getUserProfile());
+            user = e;
         }
         return Optional.ofNullable(user);
     }
@@ -58,19 +51,7 @@ public class UserRepository implements UserDao {
         List<User> results = query.getResultList();
         User user = null;
         for (User e : results) {
-            user = new User(
-                    e.getId(),
-                    e.getEmail(),
-                    e.getPassword());
-            user.setProvider(e.getProvider());
-            user.setEmailVerified(e.getEmailVerified());
-            user.setProviderId(e.getProviderId());
-            user.setUserProfile(e.getUserProfile());
-            //user.setBalanceList(e.getBalanceList());
-            //user.setInvoiceList(e.getInvoiceList());
-
-            //Orders order = user.getInvoiceList().get(0).getOrders();
-           // System.out.println(order);
+            user = e;
         }
 
         return Optional.ofNullable(user);
@@ -85,6 +66,7 @@ public class UserRepository implements UserDao {
         List<User> results = query.getResultList();
         User user = null;
         for (User e : results) {
+            /*
             user = new User(
                     e.getId(),
                     e.getEmail(),
@@ -93,9 +75,10 @@ public class UserRepository implements UserDao {
             user.setProvider(e.getProvider());
             user.setEmailVerified(e.getEmailVerified());
             user.setProviderId(e.getProviderId());
-            user.setUserProfile(e.getUserProfile());
+            //user.setUserProfile(e.getUserProfile());
             //user.setBalanceList(e.getBalanceList());
-            //user.setInvoiceList(e.getInvoiceList());
+            //user.setInvoiceList(e.getInvoiceList());*/
+            user = e;
         }
         return Optional.ofNullable(user);
     }
@@ -113,11 +96,7 @@ public class UserRepository implements UserDao {
         //session.close();
         User user = null;
         for (User e : results) {
-            user = new User(
-                    e.getId(),
-                    e.getEmail(),
-                    e.getPassword());
-            user.setUserProfile(e.getUserProfile());
+            user = e;
         }
         return Optional.ofNullable(user);
     }

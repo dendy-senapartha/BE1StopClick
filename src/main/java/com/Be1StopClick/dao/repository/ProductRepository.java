@@ -44,15 +44,6 @@ public class ProductRepository implements ProductDao {
     }
 
     @Override
-    public List<Album> findAllAlbum() {
-        String hql = "From Album";
-        System.out.println(hql);
-        Query query = entityManager.createQuery(hql);
-        List<Album> results = query.getResultList();
-        return results;
-    }
-
-    @Override
     public List<Product> findProductByCategoryIdAndTitle(int catId, String title) {
         String hql = "SELECT DISTINCT prdct FROM Product prdct " +
                 "LEFT JOIN prdct.category ctgry " +
@@ -117,6 +108,37 @@ public class ProductRepository implements ProductDao {
         List<Product> results = query.getResultList();
         return results;
     }
+
+    @Override
+    public List<Product> getAlbumProducts(String albumId) {
+        String hql = "SELECT DISTINCT prdct FROM Product prdct " +
+                "INNER JOIN prdct.trackList track " +
+                "INNER JOIN track.album albm " +
+                "WHERE albm.id = " + albumId;
+        System.out.println(hql);
+        Query query = entityManager.createQuery(hql);
+        List<Product> results = query.getResultList();
+        return results;
+    }
+
+    @Override
+    public List<Product> findBuyedProductByUserIdAndAlbumId(String userId, String albumId) {
+        String hql = "SELECT DISTINCT prdct FROM Invoice invc " +
+                "INNER JOIN invc.user usr " +
+                "INNER JOIN invc.orders ordrs " +
+                "INNER JOIN invc.receipt rcpt " +
+                "INNER JOIN ordrs.itemList ordritm " +
+                "INNER JOIN ordritm.product prdct " +
+                "INNER JOIN prdct.trackList track " +
+                "INNER JOIN track.album albm " +
+                "WHERE usr.id = " + userId + " " +
+                "AND albm.id = " + albumId;
+        System.out.println(hql);
+        Query query = entityManager.createQuery(hql);
+        List<Product> results = query.getResultList();
+        return results;
+    }
+
 
     @Override
     public boolean save(Product o) {

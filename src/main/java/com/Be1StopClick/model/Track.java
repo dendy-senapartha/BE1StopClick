@@ -41,14 +41,9 @@ public class Track {
     @Column(name = "length")
     private int length;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name="track_album",
-            joinColumns={@JoinColumn(name="track_id", referencedColumnName="id")},
-            inverseJoinColumns={@JoinColumn(name="album_id", referencedColumnName="id")})
-    @JsonManagedReference // a part with the annotation will be serialized normally.
+    @ManyToOne
     @JsonIgnoreProperties("tracks")
-    private List<Album> albums= new ArrayList<>();
+    private Album album;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -107,11 +102,12 @@ public class Track {
         this.artists = artists;
     }
 
-    public List<Album> getAlbums() {
-        return albums;
+
+    public Album getAlbum() {
+        return album;
     }
 
-    public void setAlbums(List<Album> albums) {
-        this.albums = albums;
+    public void setAlbum(Album album) {
+        this.album = album;
     }
 }

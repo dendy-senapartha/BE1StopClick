@@ -18,8 +18,10 @@ import org.springframework.stereotype.Component;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -169,22 +171,25 @@ public class LoginFilter implements Filter {
         user.setEmail(userPayLoad.getEmail());
         UserProfile profile = new UserProfile();
         profile.setName(userPayLoad.get("name").toString());
+
         //profile.setImageUrl(userPayLoad.get("picture").toString());
-        user.setUserProfile(profile);
+        user.addUserProfile(profile);
         if (userRepository.save(user)) {
             return user;
         }
         return null;
     }
 
-    private User updateExistingUser(User existingUser, Payload userPayLoad) {
-        UserProfile profile = existingUser.getUserProfile();
-        profile.setName(userPayLoad.get("name").toString());
-        //profile.setImageUrl(userPayLoad.get("picture").toString());
+    private User updateExistingUser(User existingUser,@NotNull Payload userPayLoad) {
+        Objects.requireNonNull(existingUser, "existingUser must not be null");
+        Objects.requireNonNull(userPayLoad, "userPayLoad must not be null");
+        Objects.requireNonNull(userPayLoad.get("name"), "attrib name of userPayload must not be null");
+        if (existingUser.getUserProfile() != null) {
+            existingUser.getUserProfile().setName(userPayLoad.get("name").toString());
+        }
+
         existingUser.setEmail(userPayLoad.get("email").toString());
         existingUser.setEmailVerified(Boolean.valueOf(userPayLoad.getEmailVerified()));
-        existingUser.setUserProfile(profile);
-        //existingUser.setInvoiceList();
         if (userRepository.update(existingUser)) {
             return existingUser;
         }

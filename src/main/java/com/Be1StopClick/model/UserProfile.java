@@ -26,8 +26,8 @@ public class UserProfile {
     @Column(name = "image_url")
     private String imageUrl;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @OneToOne
+    @MapsId
     private User user;
 
     public UserProfile() {
@@ -87,8 +87,11 @@ public class UserProfile {
         this.imageUrl = imageUrl;
     }
 
-
     public User getUser() {
         return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }
