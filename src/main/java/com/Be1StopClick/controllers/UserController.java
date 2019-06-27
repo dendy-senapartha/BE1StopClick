@@ -68,9 +68,14 @@ public class UserController {
         User user = new User(null, email, emailVerified, password, provider, provider_id);
         user.addUserProfile(new UserProfile(null, usrPrfl.getName(),
                 usrPrfl.getDob(), usrPrfl.getPhone(), usrPrfl.getImageUrl()));
-
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("result", "" + userRepository.save(user));
+        Map<String, String> map = new HashMap<>();
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isPresent()) {
+            map.put("result", "" + false);
+            map.put("error_message", "Email already Used!");
+        } else {
+            map.put("result", "" + userRepository.save(user));
+        }
         return map;
     }
 
@@ -89,7 +94,7 @@ public class UserController {
         user.getUserProfile().setPhone(usrPrfl.getPhone());
         user.getUserProfile().setImageUrl(usrPrfl.getImageUrl());
 
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         map.put("result", "" + userRepository.update(user));
         return map;
     }
