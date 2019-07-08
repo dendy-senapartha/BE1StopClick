@@ -1,6 +1,7 @@
 package com.Be1StopClick.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import org.hibernate.Hibernate;
@@ -23,15 +24,14 @@ public class OrderItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
-    @JsonIgnoreProperties("itemList")
+    @JsonIgnoreProperties("orderItemList")
     private Orders order;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
+    @JsonIgnoreProperties("orderItemList")
     private Product product;
 
     @Column(name = "quantity")
@@ -78,5 +78,12 @@ public class OrderItem {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (!(object instanceof OrderItem)) return false;
+        return id == ((OrderItem) object).getId();
     }
 }

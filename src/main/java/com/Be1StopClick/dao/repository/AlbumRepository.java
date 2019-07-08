@@ -28,8 +28,7 @@ public class AlbumRepository implements AlbumDao {
         String hql = "SELECT DISTINCT albm FROM Invoice invc " +
                 "INNER JOIN invc.user usr " +
                 "INNER JOIN invc.orders ordrs " +
-                "INNER JOIN invc.receipt rcpt " +
-                "INNER JOIN ordrs.itemList ordritm " +
+                "INNER JOIN ordrs.orderItemList ordritm " +
                 "INNER JOIN ordritm.product prdct " +
                 "INNER JOIN prdct.trackList track " +
                 "INNER JOIN track.album albm " +

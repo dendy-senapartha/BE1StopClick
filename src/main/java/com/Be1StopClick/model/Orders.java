@@ -1,5 +1,6 @@
 package com.Be1StopClick.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
@@ -31,22 +32,17 @@ public class Orders {
     @Column(name = "total_amount")
     private BigDecimal totalAmount;
 
-    @Column(name = "status")
-    private String status;
-
-    @OneToMany(orphanRemoval = true,
-            fetch = FetchType.LAZY
+    @OneToMany(fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            mappedBy = "order",
+            orphanRemoval = true
     )
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @JoinColumn(name = "order_id")
-    @JsonManagedReference
     @JsonIgnoreProperties("order")
-    private List<OrderItem> itemList = new ArrayList<>();
+    private List<OrderItem> orderItemList = new ArrayList<>();
 
     @OneToOne(mappedBy = "orders",
-            fetch = FetchType.LAZY, optional = false)
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @JsonIgnoreProperties("order")
+            cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("orders")
     private Invoice invoice;
 
     public int getId() {
@@ -73,28 +69,34 @@ public class Orders {
         this.totalAmount = totalAmount;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-
     public Invoice getInvoice() {
         return invoice;
     }
 
-    public void setInvoice(Invoice invoice) {
+    public void addInvoice(Invoice invoice) {
         this.invoice = invoice;
+        invoice.setOrders(this);
     }
 
-    public List<OrderItem> getItemList() {
-        return itemList;
+    public List<OrderItem> getOrderItemList() {
+        return orderItemList;
     }
 
-    public void setItemList(List<OrderItem> itemList) {
-        this.itemList = itemList;
+    public void addOrderItem(OrderItem orderItem) {
+        orderItemList.add(orderItem);
+        orderItem.setOrder(this);
+    }
+
+    public void removeOrderItem(OrderItem orderItem) {
+        orderItemList.remove(orderItem);
+        orderItem.setOrder(null);
+    }
+
+    public void clearOrderItem() {
+        for (OrderItem orderItem : orderItemList) {
+            orderItem.setOrder(null);
+        }
+
+        orderItemList.clear();
     }
 }

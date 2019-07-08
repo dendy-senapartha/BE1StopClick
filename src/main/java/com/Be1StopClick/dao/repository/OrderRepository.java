@@ -2,11 +2,13 @@ package com.Be1StopClick.dao.repository;
 
 import com.Be1StopClick.dao.OrderDao;
 import com.Be1StopClick.model.Orders;
+import org.hibernate.HibernateException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,12 +26,44 @@ public class OrderRepository implements OrderDao {
 
     @Override
     public List<Orders> findOrderByUserId(int userId) {
-        return null;
+        String hql = "SELECT DISTINCT ords FROM Orders ords " +
+                "INNER JOIN ords.invoice invc " +
+                "INNER JOIN invc.user usr " +
+                "WHERE usr.id=" + userId;
+        //System.out.println(hql);
+        Query query = entityManager.createQuery(hql);
+        List<Orders> results = query.getResultList();
+        return results;
     }
 
     @Override
-    public Optional<Orders> findById(Integer integer) {
-        return Optional.empty();
+    public List<Orders> getUserOrderNeedTooPay(int userId) {
+        String hql = "SELECT DISTINCT ords FROM Orders ords " +
+                "INNER JOIN ords.invoice invc " +
+                "INNER JOIN invc.user usr " +
+                "WHERE usr.id=" + userId+" " +
+                "AND invc.status LIKE 'DRAFT' " +
+                "OR invc.status LIKE 'ISSUED'";;
+        //System.out.println(hql);
+        Query query = entityManager.createQuery(hql);
+        List<Orders> results = query.getResultList();
+        return results;
+    }
+
+    @Override
+    public Optional<Orders> findById(Integer id) {
+        String hql = "FROM Orders orders WHERE orders.id = :id";
+        //System.out.println(hql);
+        Query query = entityManager.createQuery(hql);
+        query.setParameter("id", id);
+        //List result = query.list();
+        List<Orders> results = query.getResultList();
+        //session.close();
+        Orders orders1 = null;
+        for (Orders orders : results) {
+            orders1 = orders;
+        }
+        return Optional.ofNullable(orders1);
     }
 
     @Override
@@ -38,13 +72,30 @@ public class OrderRepository implements OrderDao {
     }
 
     @Override
-    public boolean save(Orders o) {
-        return false;
+    public boolean save(Orders orders) {
+        boolean status;
+        try {
+            entityManager.persist(orders);
+            status = true;
+        } catch (HibernateException ex) {
+            System.out.println("exception: " + ex);
+            status = false;
+        }
+
+        return status;
     }
 
     @Override
-    public boolean update(Orders o) {
-        return false;
+    public boolean update(Orders orders) {
+        boolean status = false;
+        try {
+            entityManager.merge(orders);
+            status = true;
+        } catch (HibernateException ex) {
+            System.out.println("exception: " + ex);
+        }
+
+        return status;
     }
 
     @Override

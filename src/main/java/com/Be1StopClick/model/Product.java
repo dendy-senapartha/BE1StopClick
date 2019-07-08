@@ -64,16 +64,21 @@ public class Product {
     @OneToMany(fetch = FetchType.LAZY)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinColumn(name = "product_id")
-    @JsonManagedReference // a part with the annotation will be serialized normally.
     @JsonIgnoreProperties("product")
     private List<ProductImage> productImageList = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY)
     @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinColumn(name = "product_id")
-    @JsonManagedReference // a part with the annotation will be serialized normally.
     @JsonIgnoreProperties("product")
     private List<Track> trackList = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            mappedBy = "order"
+    )
+    @JsonIgnoreProperties("product")
+    private List<OrderItem> orderItemList = new ArrayList<>();
 
     public int getId() {
         return id;
@@ -163,12 +168,25 @@ public class Product {
         this.productImageList = productImageList;
     }
 
-
     public List<Track> getTrackList() {
         return trackList;
     }
 
     public void setTrackList(List<Track> trackList) {
         this.trackList = trackList;
+    }
+
+    public List<OrderItem> getOrderItemList() {
+        return orderItemList;
+    }
+
+    public void addOrderItem(OrderItem orderItem) {
+        orderItemList.add(orderItem);
+        orderItem.setProduct(this);
+    }
+
+    public void removeOrderItem(OrderItem orderItem) {
+        orderItemList.remove(orderItem);
+        orderItem.setProduct(null);
     }
 }

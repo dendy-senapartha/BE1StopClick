@@ -50,7 +50,6 @@ public class Track {
             name="track_artist",
             joinColumns={@JoinColumn(name="track_id", referencedColumnName="id")},
             inverseJoinColumns={@JoinColumn(name="artist_id", referencedColumnName="id")})
-    @JsonManagedReference // a part with the annotation will be serialized normally.
     @JsonIgnoreProperties("tracks")
     private List<Artist> artists= new ArrayList<>();
 

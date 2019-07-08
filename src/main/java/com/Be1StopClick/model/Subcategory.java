@@ -43,7 +43,6 @@ public class Subcategory {
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id")
-    @JsonManagedReference
     private Category category;
 
     public int getId() {

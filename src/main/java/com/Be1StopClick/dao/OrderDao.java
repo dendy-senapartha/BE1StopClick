@@ -13,4 +13,5 @@ import java.util.List;
 
 public interface OrderDao extends Dao<Orders, Integer> {
     List<Orders> findOrderByUserId(int userId);
+    List<Orders> getUserOrderNeedTooPay(int userId);
 }

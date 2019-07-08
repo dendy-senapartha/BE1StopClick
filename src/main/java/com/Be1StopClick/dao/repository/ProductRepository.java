@@ -25,8 +25,18 @@ public class ProductRepository implements ProductDao {
     private EntityManager entityManager;
 
     @Override
-    public Optional<Product> findById(Integer integer) {
-        return Optional.empty();
+    public Optional<Product> findById(Integer id) {
+        String hql = "FROM Product prdct WHERE prdct.id = :id";
+        Query query = entityManager.createQuery(hql);
+        query.setParameter("id", id);
+        //List result = query.list();
+        List<Product> results = query.getResultList();
+        //session.close();
+        Product product1 = null;
+        for (Product product : results) {
+            product1 = product;
+        }
+        return Optional.ofNullable(product1);
     }
 
     @Override
@@ -61,8 +71,7 @@ public class ProductRepository implements ProductDao {
         String hql = "SELECT DISTINCT prdct FROM Invoice invc " +
                 "INNER JOIN invc.user usr " +
                 "INNER JOIN invc.orders ordrs " +
-                "INNER JOIN invc.receipt rcpt " +
-                "INNER JOIN ordrs.itemList ordritm " +
+                "INNER JOIN ordrs.orderItemList ordritm " +
                 "INNER JOIN ordritm.product prdct " +
                 "INNER JOIN prdct.category ctgry " +
                 "WHERE ctgry.id = " + catId +
@@ -78,8 +87,7 @@ public class ProductRepository implements ProductDao {
         String hql = "SELECT DISTINCT prdct FROM Invoice invc " +
                 "INNER JOIN invc.user usr " +
                 "INNER JOIN invc.orders ordrs " +
-                "INNER JOIN invc.receipt rcpt " +
-                "INNER JOIN ordrs.itemList ordritm " +
+                "INNER JOIN ordrs.orderItemList ordritm " +
                 "INNER JOIN ordritm.product prdct " +
                 "INNER JOIN prdct.category ctgry " +
                 "WHERE ctgry.id = " + catId + " " +
@@ -96,8 +104,7 @@ public class ProductRepository implements ProductDao {
         String hql = "SELECT DISTINCT prdct FROM Invoice invc " +
                 "INNER JOIN invc.user usr " +
                 "INNER JOIN invc.orders ordrs " +
-                "INNER JOIN invc.receipt rcpt " +
-                "INNER JOIN ordrs.itemList ordritm " +
+                "INNER JOIN ordrs.orderItemList ordritm " +
                 "INNER JOIN ordritm.product prdct " +
                 "INNER JOIN prdct.category ctgry " +
                 "WHERE ctgry.id = " + catId + " " +
@@ -126,8 +133,7 @@ public class ProductRepository implements ProductDao {
         String hql = "SELECT DISTINCT prdct FROM Invoice invc " +
                 "INNER JOIN invc.user usr " +
                 "INNER JOIN invc.orders ordrs " +
-                "INNER JOIN invc.receipt rcpt " +
-                "INNER JOIN ordrs.itemList ordritm " +
+                "INNER JOIN ordrs.orderItemList ordritm " +
                 "INNER JOIN ordritm.product prdct " +
                 "INNER JOIN prdct.trackList track " +
                 "INNER JOIN track.album albm " +

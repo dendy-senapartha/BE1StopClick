@@ -85,13 +85,10 @@ public class UserRepository implements UserDao {
 
     @Override
     public Optional<User> findById(Long aLong) {
-        //Session session = this.sessionFactory.openSession();
-
-        String hql = "FROM User user WHERE user.id = :id";
+       String hql = "FROM User user WHERE user.id = :id";
         System.out.println(hql);
         Query query = entityManager.createQuery(hql);
         query.setParameter("id", aLong);
-        //List result = query.list();
         List<User> results = query.getResultList();
         //session.close();
         User user = null;

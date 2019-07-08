@@ -57,7 +57,6 @@ public class Video {
             name="actor_video",
             joinColumns={@JoinColumn(name="video_id", referencedColumnName="id")},
             inverseJoinColumns={@JoinColumn(name="actor_id", referencedColumnName="id")})
-    @JsonManagedReference // a part with the annotation will be serialized normally.
     private List<Actor> actors= new ArrayList<>();
 
     @ManyToMany
@@ -65,7 +64,6 @@ public class Video {
             name="director_video",
             joinColumns={@JoinColumn(name="video_id", referencedColumnName="id")},
             inverseJoinColumns={@JoinColumn(name="director_id", referencedColumnName="id")})
-    @JsonManagedReference // a part with the annotation will be serialized normally.
     private List<Director> directors= new ArrayList<>();
 
     public int getId() {

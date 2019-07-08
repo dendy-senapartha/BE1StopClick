@@ -24,10 +24,8 @@ public class Invoice {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @JoinColumn(name = "order_id")
-    @JsonIgnoreProperties("invoice")
+    @OneToOne
+    @MapsId
     private Orders orders;
 
     @OneToOne(fetch = FetchType.LAZY)
@@ -36,23 +34,19 @@ public class Invoice {
     @JsonIgnoreProperties("invoiceList")
     private User user;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+    @JoinColumn(name = "payment_method_id")
+    private PaymentMethod paymentMethod;
+
+    @Column(name = "description")
+    private String description;
+
+    @Column(name = "status")
+    private String status;
+
     @Column(name = "created")
     private Date created;
-
-    @OneToOne(mappedBy = "invoice",
-            fetch = FetchType.LAZY)
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @JsonIgnoreProperties("invoice")
-    private Receipt receipt;
-
-    public Orders getOrders() {
-
-        return (Orders) Hibernate.unproxy(orders);
-    }
-
-    public void setOrders(Orders orders) {
-        this.orders = orders;
-    }
 
     public int getId() {
         return id;
@@ -71,18 +65,42 @@ public class Invoice {
     }
 
     public User getUser() {
-        return user;
+        return (User) Hibernate.unproxy(user);
     }
 
     public void setUser(User user) {
         this.user = user;
     }
 
-    public Receipt getReceipt() {
-        return receipt;
+    public String getStatus() {
+        return status;
     }
 
-    public void setReceipt(Receipt receipt) {
-        this.receipt = receipt;
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public PaymentMethod getPaymentMethod() {
+        return (PaymentMethod) Hibernate.unproxy(paymentMethod) ;
+    }
+
+    public void setPaymentMethod(PaymentMethod paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Orders getOrders() {
+        return orders;
+    }
+
+    public void setOrders(Orders orders) {
+        this.orders = orders;
     }
 }

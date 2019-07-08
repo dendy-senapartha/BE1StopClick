@@ -35,7 +35,6 @@ public class Artist {
 
     //bidirectional mapping. it refrence the atribut on the employee entity
     @ManyToMany(mappedBy="artists", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-    @JsonManagedReference //a part with the annotation will be omitted from serialization.
     @JsonIgnoreProperties("artists")
     private List<Track> tracks = new ArrayList();
 

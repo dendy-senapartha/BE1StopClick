@@ -36,7 +36,6 @@ public class Album {
     private String albumImageUrl;
 
     @OneToMany(mappedBy = "album", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonManagedReference //a part with the annotation will be omitted from serialization.
     @JsonIgnoreProperties("album")
     private List<Track> tracks = new ArrayList();
 
