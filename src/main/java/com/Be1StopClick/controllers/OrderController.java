@@ -7,11 +7,16 @@ import com.Be1StopClick.dao.UserDao;
 import com.Be1StopClick.dto.InvoiceDTO;
 import com.Be1StopClick.dto.OrderDTO;
 import com.Be1StopClick.dto.PaymentMethodDTO;
+import com.Be1StopClick.dto.request.AddOrderItemToOrderRequest;
 import com.Be1StopClick.dto.request.CreateOrderRequest;
 import com.Be1StopClick.dto.OrderItemDTO;
+import com.Be1StopClick.dto.request.RemoveOrderItemFromOrderRequest;
 import com.Be1StopClick.dto.request.UpdateOrderRequest;
+import com.Be1StopClick.dto.response.AddOrderItemToOrderResponse;
 import com.Be1StopClick.dto.response.GetOrderDetailsResponse;
+import com.Be1StopClick.dto.response.RemoveOrderItemFromOrderResponse;
 import com.Be1StopClick.model.*;
+import com.alibaba.fastjson.JSON;
 import org.hibernate.Hibernate;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
@@ -83,9 +88,8 @@ public class OrderController {
         }
     };
 
-    @PostMapping(value = "/order/create-order",
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, String> createOrder(@RequestBody CreateOrderRequest createOrderRequest) throws ParseException {
+    //@PostMapping(value = "/order/create-order", produces = MediaType.APPLICATION_JSON_VALUE)
+    public boolean createOrder(@RequestBody CreateOrderRequest createOrderRequest) throws ParseException {
 
         Date orderDate = new SimpleDateFormat("dd-MM-yyyy").parse(createOrderRequest.getOrderDate());
         int paymentMethodId = Integer.parseInt(createOrderRequest.getPaymentMethodId());
@@ -139,8 +143,105 @@ public class OrderController {
         order.setTotalAmount(totalAmount);
         order.setOrderDate(orderDate);
 
-        //order.setItemList(new ArrayList<>());
-        result.put("result", "" + orderRepository.save(order));
+        //result.put("result", "" + orderRepository.save(order));
+        return orderRepository.save(order);
+    }
+
+    @PostMapping(value = "/order/add-item-to-order",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, AddOrderItemToOrderResponse> addItemToOrder(@RequestBody AddOrderItemToOrderRequest orderItem) throws ParseException {
+        Map<String, AddOrderItemToOrderResponse> result = new HashMap<>();
+        AddOrderItemToOrderResponse response = new AddOrderItemToOrderResponse();
+
+        AddOrderItemToOrderRequest.OrderItem theItem = orderItem.getOrderItem();
+        int quantity = Integer.parseInt(theItem.getQuantity());
+        int productId = Integer.parseInt(theItem.getProductId());
+        long userId = Long.parseLong(orderItem.getUserId());
+
+        //find the order item product
+        Optional<Product> productOptional = productRepository.findById(productId);
+        Product product = null;
+        if (productOptional.isPresent()) {
+            product = productOptional.get();
+        }
+        //find if there any draft order
+        List<Orders> draftOrder = orderRepository.findUserDraftOrder(userId);
+        if (!draftOrder.isEmpty()) {
+
+            BigDecimal subtotal = product.getPrice().multiply(new BigDecimal(quantity));
+            OrderItem orderItemToAdd = new OrderItem();
+            orderItemToAdd.setQuantity(quantity);
+            orderItemToAdd.setSubtotal(subtotal);
+            orderItemToAdd.setProduct(product);
+
+            //make sure there is only one order that has DRAFT status
+            if (draftOrder.size() == 1) {
+                for (Orders currentOrder : draftOrder) {
+                    orderItemToAdd.setOrder(currentOrder);
+                    BigDecimal newTotalAmount = BigDecimal.ZERO;
+                    for (OrderItem currentOrderItem : currentOrder.getOrderItemList()) {
+                        newTotalAmount = newTotalAmount.add(currentOrderItem.getSubtotal());
+                    }
+                    currentOrder.setTotalAmount(newTotalAmount.add(subtotal));
+                    currentOrder.addOrderItem(orderItemToAdd);
+                    response.setStatus(orderRepository.update(currentOrder) + "");
+                    response.setItemId(orderItemToAdd.getProduct().getId() + "");
+                }
+            }
+        }
+        //no draft order before.. so create one
+        else {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+            CreateOrderRequest createOrderRequest = new CreateOrderRequest();
+            createOrderRequest.setOrderDate(sdf.format(Calendar.getInstance().getTime()));
+            createOrderRequest.setInvoiceStatus("DRAFT");
+            createOrderRequest.setDescription("");
+            createOrderRequest.setPaymentMethodId("1");
+            createOrderRequest.setUserId("" + userId);
+
+            List<CreateOrderRequest.OrderItem> orderItems = new ArrayList<>();
+            CreateOrderRequest.OrderItem itemToAdd = new CreateOrderRequest.OrderItem();
+            itemToAdd.setProductId(theItem.getProductId());
+            itemToAdd.setQuantity(theItem.getQuantity());
+            itemToAdd.setSubtotal(product.getPrice() + "");
+            orderItems.add(itemToAdd);
+
+            createOrderRequest.setOrderItemList(orderItems);
+            response.setStatus(createOrder(createOrderRequest) + "");
+            response.setItemId(itemToAdd.getProductId() + "");
+        }
+        result.put("result", modelMapper.map(response, AddOrderItemToOrderResponse.class));
+        return result;
+    }
+
+    @PostMapping(value = "/order/remove-item-from-order",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, RemoveOrderItemFromOrderResponse> removeItemFromOrder(@RequestBody RemoveOrderItemFromOrderRequest orderItem)
+            throws ParseException {
+        Map<String, RemoveOrderItemFromOrderResponse> result = new HashMap<>();
+        RemoveOrderItemFromOrderResponse response = new RemoveOrderItemFromOrderResponse();
+
+        RemoveOrderItemFromOrderRequest.OrderItem theItem = orderItem.getOrderItem();
+        int productId = Integer.parseInt(theItem.getProductId());
+        int orderId = Integer.parseInt(orderItem.getOrderId());
+
+        Optional<Orders> ordersOptional = orderRepository.findById(orderId);
+        Orders currentOrder = null;
+        if (ordersOptional.isPresent()) {
+            currentOrder = ordersOptional.get();
+
+            for (Iterator<OrderItem> orderItemIterator = currentOrder.getOrderItemList().iterator();
+                 orderItemIterator.hasNext(); ) {
+                OrderItem orderedItem = orderItemIterator.next();
+                if (productId == orderedItem.getProduct().getId()) {
+                    currentOrder.setTotalAmount(currentOrder.getTotalAmount().min(orderedItem.getSubtotal()));
+                    orderItemIterator.remove();
+                }
+            }
+            response.setStatus(orderRepository.update(currentOrder) + "");
+            response.setItemId(productId + "");
+        }
+        result.put("result", modelMapper.map(response, RemoveOrderItemFromOrderResponse.class));
         return result;
     }
 
@@ -214,7 +315,7 @@ public class OrderController {
         int orderId = Integer.parseInt(body.get("orderId").toString());
         Map<String, OrderDTO> result = new HashMap<>();
         Optional orders = orderRepository.findById(orderId);
-        result.put("result",  modelMapper.map(orders.get(), OrderDTO.class));
+        result.put("result", modelMapper.map(orders.get(), OrderDTO.class));
         return result;
     }
 
@@ -222,7 +323,7 @@ public class OrderController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, List<OrderDTO>> findOrderByUserId(@RequestBody Map<String, Object> body) {
         Objects.requireNonNull(body.get("userId"), "userId must not be null");
-        int userId = Integer.parseInt(body.get("userId").toString());
+        long userId = Long.parseLong(body.get("userId").toString());
         Map<String, List<OrderDTO>> result = new HashMap<>();
         List<Orders> ordersList = orderRepository.findOrderByUserId(userId);
         /*result.put("result", ordersList.stream()
@@ -230,7 +331,7 @@ public class OrderController {
                 .collect(Collectors.toList()));*/
         modelMapper.addConverter(orderConverter);
         result.put("result", ordersList.stream()
-                .map(orders ->modelMapper.map(orders, OrderDTO.class))
+                .map(orders -> modelMapper.map(orders, OrderDTO.class))
                 .collect(Collectors.toList()));
         return result;
     }
@@ -239,13 +340,13 @@ public class OrderController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, List<OrderDTO>> getUserOrderNeedToPay(@RequestBody Map<String, Object> body) {
         Objects.requireNonNull(body.get("userId"), "userId must not be null");
-        int userId = Integer.parseInt(body.get("userId").toString());
+        long userId = Long.parseLong(body.get("userId").toString());
         Map<String, List<OrderDTO>> result = new HashMap<>();
         List<Orders> ordersList = orderRepository.getUserOrderNeedTooPay(userId);
 
         modelMapper.addConverter(orderConverter);
         result.put("result", ordersList.stream()
-                .map(orders ->modelMapper.map(orders, OrderDTO.class))
+                .map(orders -> modelMapper.map(orders, OrderDTO.class))
                 .collect(Collectors.toList()));
         return result;
     }
@@ -257,7 +358,7 @@ public class OrderController {
         Map<String, GetOrderDetailsResponse> result = new HashMap<>();
         Optional orders = orderRepository.findById(orderId);
 
-        result.put("result",  modelMapper.map(orders.get(), GetOrderDetailsResponse.class));
+        result.put("result", modelMapper.map(orders.get(), GetOrderDetailsResponse.class));
         return result;
     }
 }

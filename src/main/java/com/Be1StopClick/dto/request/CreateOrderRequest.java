@@ -29,7 +29,7 @@ public class CreateOrderRequest {
 
     private String OrderDate;
 
-    public class OrderItem {
+    public static class OrderItem {
         private String productId;
         private String quantity;
         private String subtotal;

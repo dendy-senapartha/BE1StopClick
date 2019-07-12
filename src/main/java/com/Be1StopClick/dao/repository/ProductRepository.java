@@ -138,6 +138,7 @@ public class ProductRepository implements ProductDao {
                 "INNER JOIN prdct.trackList track " +
                 "INNER JOIN track.album albm " +
                 "WHERE usr.id = " + userId + " " +
+                "AND (invc.status LIKE 'DRAFT' OR invc.status LIKE 'ISSUED' OR invc.status LIKE 'PAID') "+
                 "AND albm.id = " + albumId;
         System.out.println(hql);
         Query query = entityManager.createQuery(hql);

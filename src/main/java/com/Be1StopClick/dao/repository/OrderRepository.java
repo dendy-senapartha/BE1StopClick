@@ -25,7 +25,7 @@ public class OrderRepository implements OrderDao {
     private EntityManager entityManager;
 
     @Override
-    public List<Orders> findOrderByUserId(int userId) {
+    public List<Orders> findOrderByUserId(long userId) {
         String hql = "SELECT DISTINCT ords FROM Orders ords " +
                 "INNER JOIN ords.invoice invc " +
                 "INNER JOIN invc.user usr " +
@@ -37,13 +37,25 @@ public class OrderRepository implements OrderDao {
     }
 
     @Override
-    public List<Orders> getUserOrderNeedTooPay(int userId) {
+    public List<Orders> getUserOrderNeedTooPay(long userId) {
         String hql = "SELECT DISTINCT ords FROM Orders ords " +
                 "INNER JOIN ords.invoice invc " +
                 "INNER JOIN invc.user usr " +
-                "WHERE usr.id=" + userId+" " +
-                "AND invc.status LIKE 'DRAFT' " +
-                "OR invc.status LIKE 'ISSUED'";;
+                "WHERE usr.id=" + userId + " " +
+                "AND (invc.status LIKE 'DRAFT' OR invc.status LIKE 'ISSUED')";
+        //System.out.println(hql);
+        Query query = entityManager.createQuery(hql);
+        List<Orders> results = query.getResultList();
+        return results;
+    }
+
+    @Override
+    public List<Orders> findUserDraftOrder(long userId) {
+        String hql = "SELECT DISTINCT ords FROM Orders ords " +
+                "INNER JOIN ords.invoice invc " +
+                "INNER JOIN invc.user usr " +
+                "WHERE usr.id=" + userId + " " +
+                "AND invc.status LIKE 'DRAFT'";
         //System.out.println(hql);
         Query query = entityManager.createQuery(hql);
         List<Orders> results = query.getResultList();
