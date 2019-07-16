@@ -226,7 +226,7 @@ public class OrderController {
         int orderId = Integer.parseInt(orderItem.getOrderId());
 
         Optional<Orders> ordersOptional = orderRepository.findById(orderId);
-        Orders currentOrder = null;
+        Orders currentOrder;
         if (ordersOptional.isPresent()) {
             currentOrder = ordersOptional.get();
 
@@ -234,12 +234,19 @@ public class OrderController {
                  orderItemIterator.hasNext(); ) {
                 OrderItem orderedItem = orderItemIterator.next();
                 if (productId == orderedItem.getProduct().getId()) {
-                    currentOrder.setTotalAmount(currentOrder.getTotalAmount().min(orderedItem.getSubtotal()));
+                    BigDecimal total = currentOrder.getTotalAmount().subtract(orderedItem.getSubtotal());
+                    currentOrder.setTotalAmount(total);
                     orderItemIterator.remove();
                 }
             }
+
             response.setStatus(orderRepository.update(currentOrder) + "");
             response.setItemId(productId + "");
+
+            //if orderitem is zero, then remove the order
+            if (currentOrder.getOrderItemList().isEmpty()) {
+                response.setStatus(orderRepository.delete(currentOrder) + "");
+            }
         }
         result.put("result", modelMapper.map(response, RemoveOrderItemFromOrderResponse.class));
         return result;
@@ -359,6 +366,23 @@ public class OrderController {
         Optional orders = orderRepository.findById(orderId);
 
         result.put("result", modelMapper.map(orders.get(), GetOrderDetailsResponse.class));
+        return result;
+    }
+
+    @PostMapping(value = "/order/delete-order-by-id",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, RemoveOrderItemFromOrderResponse> deleteOrdersById(@RequestBody Map<String, Object> body) {
+        int orderId = Integer.parseInt(body.get("orderId").toString());
+        Map<String, RemoveOrderItemFromOrderResponse> result = new HashMap<>();
+        RemoveOrderItemFromOrderResponse response = new RemoveOrderItemFromOrderResponse();
+
+        Optional<Orders> ordersOptional = orderRepository.findById(orderId);
+        if (ordersOptional.isPresent()) {
+            Orders currentOrder = ordersOptional.get();
+            response.setStatus(orderRepository.delete(currentOrder) + "");
+            response.setItemId("test");
+        }
+        result.put("result", modelMapper.map(response, RemoveOrderItemFromOrderResponse.class));
         return result;
     }
 }

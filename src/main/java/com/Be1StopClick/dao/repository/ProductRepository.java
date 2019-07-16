@@ -75,6 +75,7 @@ public class ProductRepository implements ProductDao {
                 "INNER JOIN ordritm.product prdct " +
                 "INNER JOIN prdct.category ctgry " +
                 "WHERE ctgry.id = " + catId +
+                "AND (invc.status LIKE 'DRAFT' OR invc.status LIKE 'ISSUED' OR invc.status LIKE 'PAID') " +
                 "AND usr.id =" + userId;
 
         Query query = entityManager.createQuery(hql);

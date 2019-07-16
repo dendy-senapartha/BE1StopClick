@@ -111,7 +111,15 @@ public class OrderRepository implements OrderDao {
     }
 
     @Override
-    public boolean delete(Orders o) {
-        return false;
+    public boolean delete(Orders order) {
+        boolean status = false;
+        try {
+            entityManager.remove(entityManager.contains(order) ? order : entityManager.merge(order));
+            //entityManager.remove(order);
+            status = true;
+        } catch (HibernateException ex) {
+            System.out.println("exception: " + ex);
+        }
+        return status;
     }
 }
