@@ -2,6 +2,7 @@ package com.Be1StopClick.controllers;
 
 import com.Be1StopClick.dao.ProductDao;
 import com.Be1StopClick.dto.MovieDTO;
+import com.Be1StopClick.dto.response.CheckIfProductAlreadyBuyedResponse;
 import com.Be1StopClick.model.Product;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,6 +111,25 @@ public class MovieController {
         map.put("result", movieList.stream()
                 .map(movie -> modelMapper.map(movie, MovieDTO.class))
                 .collect(Collectors.toList()));
+        return map;
+    }
+
+    @PostMapping(value = "/movies/check-if-movie-already-buyed",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, CheckIfProductAlreadyBuyedResponse> checkIfMovieAlreadyBuyed(@RequestBody Map<String, Object> body) {
+        Map<String, CheckIfProductAlreadyBuyedResponse> map = new HashMap<>();
+        CheckIfProductAlreadyBuyedResponse response = new CheckIfProductAlreadyBuyedResponse();
+        Optional<Object> userid = Optional.ofNullable(body.get("userId"));
+        Optional<Object> productId = Optional.ofNullable(body.get("productId"));
+        boolean status = false;
+        if (userid.isPresent() && productId.isPresent()) {
+            Product product = productRepository.checkIfProductAlreadyOrdered(userid.get().toString(), productId.get().toString());
+            if (product != null) {
+                status = true;
+            }
+        }
+        response.status = status;
+        map.put("result", response);
         return map;
     }
 }

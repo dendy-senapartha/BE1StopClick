@@ -92,6 +92,7 @@ public class ProductRepository implements ProductDao {
                 "INNER JOIN ordritm.product prdct " +
                 "INNER JOIN prdct.category ctgry " +
                 "WHERE ctgry.id = " + catId + " " +
+                "AND invc.status LIKE 'PAID' " +
                 "AND usr.id = " + userId + " " +
                 "AND prdct.id = " + productId;
 
@@ -109,6 +110,7 @@ public class ProductRepository implements ProductDao {
                 "INNER JOIN ordritm.product prdct " +
                 "INNER JOIN prdct.category ctgry " +
                 "WHERE ctgry.id = " + catId + " " +
+                "AND invc.status LIKE 'PAID' " +
                 "AND usr.id = " + userId + " " +
                 "AND prdct.productName LIKE '%" + productName + "%'";
 
@@ -139,12 +141,33 @@ public class ProductRepository implements ProductDao {
                 "INNER JOIN prdct.trackList track " +
                 "INNER JOIN track.album albm " +
                 "WHERE usr.id = " + userId + " " +
-                "AND (invc.status LIKE 'DRAFT' OR invc.status LIKE 'ISSUED' OR invc.status LIKE 'PAID') "+
+                "AND (invc.status LIKE 'DRAFT' OR invc.status LIKE 'ISSUED' OR invc.status LIKE 'PAID') " +
                 "AND albm.id = " + albumId;
         System.out.println(hql);
         Query query = entityManager.createQuery(hql);
         List<Product> results = query.getResultList();
         return results;
+    }
+
+    @Override
+    public Product checkIfProductAlreadyOrdered(String userId, String productId) {
+        String hql = "SELECT DISTINCT prdct FROM Invoice invc " +
+                "INNER JOIN invc.user usr " +
+                "INNER JOIN invc.orders ordrs " +
+                "INNER JOIN ordrs.orderItemList ordritm " +
+                "INNER JOIN ordritm.product prdct " +
+                "INNER JOIN prdct.category ctgry " +
+                "WHERE invc.status LIKE 'PAID' " +
+                "AND usr.id = " + userId + " " +
+                "AND prdct.id = " + productId;
+
+        Query query = entityManager.createQuery(hql);
+        List<Product> results = query.getResultList();
+        Product product = null;
+        if (!results.isEmpty()) {
+            product = results.get(0);
+        }
+        return product;
     }
 
 

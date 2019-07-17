@@ -2,6 +2,7 @@ package com.Be1StopClick.dao.repository;
 
 import com.Be1StopClick.dao.BalanceDao;
 import com.Be1StopClick.model.Balance;
+import org.hibernate.HibernateException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,13 +45,30 @@ public class BalanceRepository implements BalanceDao {
     }
 
     @Override
-    public boolean save(Balance o) {
-        return false;
+    public boolean save(Balance balance) {
+        boolean status;
+        try {
+            entityManager.persist(balance);
+            status = true;
+        } catch (HibernateException ex) {
+            System.out.println("exception: " + ex);
+            status = false;
+        }
+
+        return status;
     }
 
     @Override
-    public boolean update(Balance o) {
-        return false;
+    public boolean update(Balance balance) {
+        boolean status = false;
+        try {
+            entityManager.merge(balance);
+            status = true;
+        } catch (HibernateException ex) {
+            System.out.println("exception: " + ex);
+        }
+
+        return status;
     }
 
     @Override

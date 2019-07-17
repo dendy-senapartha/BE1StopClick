@@ -23,6 +23,7 @@ public class BalanceController {
 
     @PostMapping(value = "/balance/get-balance-by-user",
             produces = MediaType.APPLICATION_JSON_VALUE)
+
     public Map<String, List<Balance>> getBalanceByUser(@RequestBody Map<String, Object> body) {
         Map<String, List<Balance>> map = new HashMap<>();
         Optional<Object> userId = Optional.ofNullable(body.get("userId"));

@@ -1,22 +1,15 @@
 package com.Be1StopClick.controllers;
 
-import com.Be1StopClick.dao.OrderDao;
-import com.Be1StopClick.dao.PaymentMethodDao;
-import com.Be1StopClick.dao.ProductDao;
-import com.Be1StopClick.dao.UserDao;
+import com.Be1StopClick.dao.*;
 import com.Be1StopClick.dto.InvoiceDTO;
 import com.Be1StopClick.dto.OrderDTO;
 import com.Be1StopClick.dto.PaymentMethodDTO;
-import com.Be1StopClick.dto.request.AddOrderItemToOrderRequest;
-import com.Be1StopClick.dto.request.CreateOrderRequest;
-import com.Be1StopClick.dto.OrderItemDTO;
-import com.Be1StopClick.dto.request.RemoveOrderItemFromOrderRequest;
-import com.Be1StopClick.dto.request.UpdateOrderRequest;
+import com.Be1StopClick.dto.request.*;
 import com.Be1StopClick.dto.response.AddOrderItemToOrderResponse;
 import com.Be1StopClick.dto.response.GetOrderDetailsResponse;
+import com.Be1StopClick.dto.response.PayingOrderResponse;
 import com.Be1StopClick.dto.response.RemoveOrderItemFromOrderResponse;
 import com.Be1StopClick.model.*;
-import com.alibaba.fastjson.JSON;
 import org.hibernate.Hibernate;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
@@ -55,6 +48,9 @@ public class OrderController {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private BalanceDao balanceRepository;
 
     private Converter<Orders, OrderDTO> orderConverter = new Converter<Orders, OrderDTO>() {
         @Override
@@ -383,6 +379,51 @@ public class OrderController {
             response.setItemId("test");
         }
         result.put("result", modelMapper.map(response, RemoveOrderItemFromOrderResponse.class));
+        return result;
+    }
+
+    @PostMapping(value = "/order/pay-order",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, PayingOrderResponse> paymentOrder(@RequestBody PayingOrderRequest payingOrderRequest) {
+        int orderId = Integer.parseInt(payingOrderRequest.getOrderId());
+        int userId = Integer.parseInt(payingOrderRequest.getUserId());
+        int paymentMethodId = Integer.parseInt(payingOrderRequest.getPaymentMethodId());
+        Map<String, PayingOrderResponse> result = new HashMap<>();
+        PayingOrderResponse response = new PayingOrderResponse();
+
+        Optional<Orders> ordersOptional = orderRepository.findById(orderId);
+        Orders currentOrder = null;
+        if (ordersOptional.isPresent()) {
+            currentOrder = ordersOptional.get();
+        }
+
+        List<Balance> balanceList = balanceRepository.findBalanceByUserId(userId + "");
+        for (Iterator<Balance> balanceIterator = balanceList.iterator(); balanceIterator.hasNext(); ) {
+            Balance balance = balanceIterator.next();
+            if (balance.getBalanceType().getId() == paymentMethodId) {
+                if (balance.getBalance().compareTo(currentOrder.getTotalAmount()) >= 0) {
+                    balance.setLastUsage(Calendar.getInstance().getTime());
+                    BigDecimal newBalance = balance.getBalance().subtract(currentOrder.getTotalAmount());
+                    balance.setBalance(newBalance);
+                    currentOrder.getInvoice().setStatus("PAID");
+                    boolean status = balanceRepository.update(balance) & orderRepository.update(currentOrder);
+                    response.setStatus(status + "");
+                    if (status) {
+                        response.setMessage("success");
+                    } else {
+                        response.setMessage("failing njing");
+                    }
+                } else {
+                    response.setStatus(false + "");
+                    response.setMessage("duit kurang");
+                }
+
+
+                response.setOrderId(currentOrder.getId() + "'");
+            }
+        }
+
+        result.put("result", modelMapper.map(response, PayingOrderResponse.class));
         return result;
     }
 }

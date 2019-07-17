@@ -19,4 +19,5 @@ public interface ProductDao extends Dao<Product, Integer> {
     List<Product> findBuyedProductOfUserByCategoryAndProductName(int catId, String userId, String productName);
     List<Product> getAlbumProducts(String albumId);
     List<Product> findBuyedProductByUserIdAndAlbumId(String userId, String albumId);
+    Product checkIfProductAlreadyOrdered(String userId, String productId);
 }
