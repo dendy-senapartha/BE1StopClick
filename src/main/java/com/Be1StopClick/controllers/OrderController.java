@@ -328,7 +328,7 @@ public class OrderController {
         Objects.requireNonNull(body.get("userId"), "userId must not be null");
         long userId = Long.parseLong(body.get("userId").toString());
         Map<String, List<OrderDTO>> result = new HashMap<>();
-        List<Orders> ordersList = orderRepository.findOrderByUserId(userId);
+        List<Orders> ordersList = orderRepository.getFinishedOrderByUserId(userId);
         /*result.put("result", ordersList.stream()
                 .map(orders -> modelMapper.map(orders, OrderDTO.class))
                 .collect(Collectors.toList()));*/

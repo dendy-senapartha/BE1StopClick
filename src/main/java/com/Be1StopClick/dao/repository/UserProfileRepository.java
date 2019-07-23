@@ -7,11 +7,23 @@ package com.Be1StopClick.dao.repository;
 
 import com.Be1StopClick.dao.UserProfileDao;
 import com.Be1StopClick.model.UserProfile;
+import org.hibernate.HibernateException;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 import java.util.Optional;
 
+
+@Transactional
+@Component
 public class UserProfileRepository implements UserProfileDao {
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
     @Override
     public Optional<UserProfile> findByFirstName(String firstName) {
         return Optional.empty();
@@ -38,8 +50,16 @@ public class UserProfileRepository implements UserProfileDao {
     }
 
     @Override
-    public boolean update(UserProfile o) {
-        return false;
+    public boolean update(UserProfile userProfile) {
+        boolean status = false;
+        try {
+            entityManager.merge(userProfile);
+            status = true;
+        } catch (HibernateException ex) {
+            System.out.println("exception: " + ex);
+        }
+
+        return status;
     }
 
     @Override

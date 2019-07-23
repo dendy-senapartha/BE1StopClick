@@ -1,11 +1,17 @@
 package com.Be1StopClick.controllers;
 
 import com.Be1StopClick.dao.UserDao;
+import com.Be1StopClick.dao.UserProfileDao;
+import com.Be1StopClick.dto.UserProfileDTO;
+import com.Be1StopClick.dto.request.UpdateUserProfileRequest;
+import com.Be1StopClick.dto.response.UpdateUserProfileResponse;
+import com.Be1StopClick.model.Orders;
 import com.Be1StopClick.model.User;
 import com.Be1StopClick.model.UserProfile;
 import com.Be1StopClick.util.IdUtility;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.ui.Model;
@@ -27,6 +33,12 @@ public class UserController {
 
     @Autowired
     private UserDao userRepository;
+
+    @Autowired
+    private UserProfileDao userProfileRepository;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     @RequestMapping(value = "/user/get-all-user",
             method = RequestMethod.GET,
@@ -107,6 +119,49 @@ public class UserController {
         Map<String, String> map = new HashMap<String, String>();
         map.put("result", "" + userRepository.delete(delUser));
         return map;
+    }
+
+    @PostMapping(value = "/user/get-user-profile-by-userid",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public  Map<String, UserProfileDTO> getUserProfileByUserId(@RequestBody Map<String, Object> body) {
+        Map<String, UserProfileDTO> result = new HashMap<>();
+        UserProfileDTO response = new UserProfileDTO();
+
+        Optional<Object> userId= Optional.ofNullable(body.get("userId"));
+
+        Optional<User> userOptional = userRepository.findById(Long.valueOf(userId.get().toString()));
+        User currentUser = null;
+        if (userOptional.isPresent()) {
+            currentUser = userOptional.get();
+            response.setId(currentUser.getUserProfile().getId());
+            response.setName(currentUser.getUserProfile().getName());
+            response.setDob(currentUser.getUserProfile().getDob());
+            response.setImageUrl(currentUser.getUserProfile().getImageUrl());
+            response.setPhone(currentUser.getUserProfile().getPhone());
+        }
+        result.put("result", modelMapper.map(response, UserProfileDTO.class));
+        return result;
+    }
+
+    @PostMapping(value = "/user/update-user-profile",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public  Map<String, UpdateUserProfileResponse> updateUserProfile(@RequestBody UpdateUserProfileRequest request) {
+        Map<String, UpdateUserProfileResponse> result = new HashMap<>();
+        UpdateUserProfileResponse response = new UpdateUserProfileResponse();
+
+        Optional<User> userOptional = userRepository.findById(request.getUserId());
+        User currentUser = null;
+        if (userOptional.isPresent()) {
+            currentUser = userOptional.get();
+            currentUser.getUserProfile().setName(request.getName());
+            currentUser.getUserProfile().setDob(request.getDob());
+            currentUser.getUserProfile().setImageUrl(request.getImageUrl());
+            currentUser.getUserProfile().setPhone(request.getPhone());
+        }
+        response.setStatus(""+userRepository.update(currentUser));
+
+        result.put("result", modelMapper.map(response, UpdateUserProfileResponse.class));
+        return result;
     }
 
 }

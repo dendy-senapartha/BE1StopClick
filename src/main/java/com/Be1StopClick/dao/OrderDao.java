@@ -12,7 +12,7 @@ import java.util.List;
  */
 
 public interface OrderDao extends Dao<Orders, Integer> {
-    List<Orders> findOrderByUserId(long userId);
+    List<Orders> getFinishedOrderByUserId(long userId);
     List<Orders> getUserOrderNeedTooPay(long userId);
     List<Orders> findUserDraftOrder(long userId);
 }

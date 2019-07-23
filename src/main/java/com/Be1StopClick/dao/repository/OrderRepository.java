@@ -25,11 +25,12 @@ public class OrderRepository implements OrderDao {
     private EntityManager entityManager;
 
     @Override
-    public List<Orders> findOrderByUserId(long userId) {
+    public List<Orders> getFinishedOrderByUserId(long userId) {
         String hql = "SELECT DISTINCT ords FROM Orders ords " +
                 "INNER JOIN ords.invoice invc " +
                 "INNER JOIN invc.user usr " +
-                "WHERE usr.id=" + userId;
+                "WHERE usr.id=" + userId + " " +
+                "AND (invc.status NOT LIKE 'DRAFT' AND invc.status NOT LIKE 'ISSUED')";
         //System.out.println(hql);
         Query query = entityManager.createQuery(hql);
         List<Orders> results = query.getResultList();
@@ -64,10 +65,9 @@ public class OrderRepository implements OrderDao {
 
     @Override
     public Optional<Orders> findById(Integer id) {
-        String hql = "FROM Orders orders WHERE orders.id = :id";
+        String hql = "FROM Orders orders WHERE orders.id = "+id;
         //System.out.println(hql);
         Query query = entityManager.createQuery(hql);
-        query.setParameter("id", id);
         //List result = query.list();
         List<Orders> results = query.getResultList();
         //session.close();
